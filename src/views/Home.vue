@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computedAsync } from '@vueuse/core';
 import { greet } from '../bridge';
-import { invoke } from '@tauri-apps/api/core';
 
 const hello = computedAsync(async () => {
-    return await greet("name")
+    const value = await greet("name");
+    console.log(value)
+    return value;
 })
 </script>
 
