@@ -1,4 +1,4 @@
-import { computed, nextTick, ref } from "vue";
+import { computed, ref } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 export const router = createRouter({
