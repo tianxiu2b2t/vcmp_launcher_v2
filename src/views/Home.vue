@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { greet } from '../bridge';
+import { invoke } from '@tauri-apps/api/core';
 
 const hello = computed(async () => {
-    return await greet("cnm");
+    return invoke("greet", { name: "World"});
 })
 </script>
 
