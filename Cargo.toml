@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "crates/src-tauri",
+    "crates/launcher_core",
+    "crates/vcmp_core"
+]
+resolver = "3"
