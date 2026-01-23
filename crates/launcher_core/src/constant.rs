@@ -42,11 +42,17 @@ pub static ROOT: LazyLock<PathBuf> = LazyLock::new(|| {
         if !root.exists() {
             std::fs::create_dir_all(&root).unwrap();
         }
-        return root;
+        root
     }
     
     #[cfg(not(debug_assertions))]
     PathBuf::from(Path::new("./"))
 });
-pub static APPDATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| PathBuf::from(Path::new("./appdata")));
-pub static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| PathBuf::from(Path::new("./config.toml")));
+pub static APPDATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
+    let path = ROOT.join("./appdata");
+    if !path.exists() {
+        std::fs::create_dir_all(&path).unwrap();
+    }
+    path
+});
+pub static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| ROOT.join("./config.toml"));

@@ -1,9 +1,9 @@
-use std::{cell::OnceCell, sync::OnceLock};
+use std::sync::OnceLock;
 
 use serde::{Deserialize, Serialize};
 use tracing::{Level, event};
 
-use crate::constant::{MIRROR_MASTER_URLS, MIRROR_UPDATE_URLS};
+use crate::constant::{CONFIG_PATH, MIRROR_MASTER_URLS, MIRROR_UPDATE_URLS};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InternetConfig {
@@ -40,7 +40,7 @@ pub struct Config {
 static CONFIG: OnceLock<Config> = OnceLock::new();
 
 fn load_config_from_file() -> anyhow::Result<Config> {
-    let content = std::fs::read_to_string("config.toml")?;
+    let content = std::fs::read_to_string(CONFIG_PATH.to_path_buf())?;
     let config = toml::from_str::<Config>(&content)?;
     Ok(config)
 }
@@ -65,6 +65,6 @@ pub fn save_config(config: &Config) -> anyhow::Result<()> {
     CONFIG.set(config.clone()).unwrap();
     // then save to file
     let content = toml::to_string_pretty(config)?;
-    std::fs::write("config.toml", content)?;
+    std::fs::write(CONFIG_PATH.to_path_buf(), content)?;
     Ok(())
 }
