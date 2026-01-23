@@ -23,10 +23,10 @@ import { Config } from "./types";
 //     return await invoke("set_internet", { data: data })
 // }
 
-export async function get_config() {
+export async function getConfig(): Promise<Config> {
     return await invoke("get_config")
 }
 
-export async function set_config(config: Config) {
+export async function setConfig(config: Config) {
     return await invoke("set_config", { config })
 }

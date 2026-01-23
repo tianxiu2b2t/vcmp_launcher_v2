@@ -12,6 +12,7 @@ import Progressbar from './components/Progressbar.vue';
 :root.dark {
 	--bg-color: #1f1f1f;
 	--main-color: #f4d1b4;
+	color: #f5f5f5;
 }
 :root {
 	--bg-color: #f5f5f5;
