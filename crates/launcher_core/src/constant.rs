@@ -35,3 +35,4 @@ static_urls!(MIRROR_UPDATE_URLS: [
 ]);
 
 pub static APPDATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| PathBuf::from(Path::new("./appdata")));
+pub static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| PathBuf::from(Path::new("./config.toml")));

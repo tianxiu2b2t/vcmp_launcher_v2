@@ -1,12 +1,12 @@
-use launcher_core::config::Config;
+// use launcher_core::config::Config;
 
 #[tauri::command]
-pub fn get_config() -> launcher_core::config::Config {
-    Config::default()
+pub fn get_config() -> &'static launcher_core::config::Config {
+    launcher_core::config::get_config()
 }
 
 #[tauri::command]
 pub fn set_config(config: launcher_core::config::Config) -> tauri::Result<()> {
-    // TODO: Save config
+    launcher_core::config::save_config(&config)?;
     Ok(())
 }
