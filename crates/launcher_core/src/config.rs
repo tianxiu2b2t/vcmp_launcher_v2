@@ -39,11 +39,21 @@ pub struct Config {
 
 static CONFIG: OnceLock<Config> = OnceLock::new();
 
-pub fn init_config() -> anyhow::Result<()> {
+fn load_config_from_file() -> anyhow::Result<Config> {
     let content = std::fs::read_to_string("config.toml")?;
     let config = toml::from_str::<Config>(&content)?;
+    Ok(config)
+}
+
+pub fn init_config() {
+    let config = match load_config_from_file() {
+        Ok(config) => config,
+        Err(e) => {
+            event!(Level::WARN, "failed to load config: {}", e);
+            Config::default()
+        }
+    };
     CONFIG.set(config).unwrap();
-    Ok(())
 }
 
 pub fn get_config() -> &'static Config {
