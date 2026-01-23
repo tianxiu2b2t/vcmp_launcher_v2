@@ -34,5 +34,19 @@ static_urls!(MIRROR_UPDATE_URLS: [
     "https://vcmp.txit.top"
 ]);
 
+pub static ROOT: LazyLock<PathBuf> = LazyLock::new(|| {
+    #[cfg(debug_assertions)]
+    {
+        let root = PathBuf::from(Path::new("./runner"));
+        // mkdir if not exists
+        if !root.exists() {
+            std::fs::create_dir_all(&root).unwrap();
+        }
+        return root;
+    }
+    
+    #[cfg(not(debug_assertions))]
+    PathBuf::from(Path::new("./"))
+});
 pub static APPDATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| PathBuf::from(Path::new("./appdata")));
 pub static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| PathBuf::from(Path::new("./config.toml")));
