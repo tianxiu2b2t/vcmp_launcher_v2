@@ -24,3 +24,4 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1.49.0", features = ["full"] }
 anyhow = "1.0.100"
+launcher_core = { path = "../launcher_core" }

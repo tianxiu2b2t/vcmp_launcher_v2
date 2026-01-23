@@ -1,3 +1,5 @@
+use std::{path::{Path, PathBuf}, sync::LazyLock};
+
 pub fn serde_false() -> bool {
     false
 }
@@ -31,3 +33,5 @@ static_urls!(UPDATE_URLS: [
 static_urls!(MIRROR_UPDATE_URLS: [
     "https://vcmp.txit.top"
 ]);
+
+pub static APPDATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| PathBuf::from(Path::new("./appdata")));

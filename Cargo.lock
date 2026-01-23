@@ -5386,6 +5386,7 @@ name = "vcmp_launcher"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "launcher_core",
  "serde",
  "serde_json",
  "tauri",
