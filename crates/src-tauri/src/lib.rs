@@ -8,7 +8,7 @@ pub fn run() -> tauri::Result<()> {
     launcher_core::config::init_config();
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![bridge::get_config, bridge::set_config])
+        .invoke_handler(tauri::generate_handler![bridge::get_config, bridge::set_config, bridge::fetch_internet_servers, bridge::ping_server])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
     Ok(())
