@@ -29,4 +29,5 @@ export interface ServerInfo {
     maxplayers: number;
     password: boolean;
     players_list: string[];
+    version: string;
 }

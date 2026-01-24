@@ -31,8 +31,8 @@ export async function setConfig(config: Config) {
     return await invoke('set_config', { config });
 }
 
-export async function fetchInternetServer(): Promise<Server[]> {
-    return await invoke('fetch_internet_server');
+export async function fetchInternetServers(): Promise<Server[]> {
+    return await invoke('fetch_internet_servers');
 }
 
 export async function pingServer(server: Server): Promise<ServerInfo> {
