@@ -44,5 +44,6 @@ export const progressbar = ref(0);
 
 export const config = ref(await getConfig());
 watch(config, async (newConfig) => {
+    console.log(newConfig)
     setConfig(newConfig)  
 })
