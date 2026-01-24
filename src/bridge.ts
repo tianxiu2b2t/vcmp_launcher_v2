@@ -1,5 +1,5 @@
-import { invoke } from "@tauri-apps/api/core";
-import { Config } from "./types";
+import { invoke } from '@tauri-apps/api/core';
+import { Config, Server, ServerInfo } from './types';
 
 // export async function greet(name: string) {
 //     return await invoke("greet", { name: name })
@@ -24,9 +24,17 @@ import { Config } from "./types";
 // }
 
 export async function getConfig(): Promise<Config> {
-    return await invoke("get_config")
+    return await invoke('get_config');
 }
 
 export async function setConfig(config: Config) {
-    return await invoke("set_config", { config })
+    return await invoke('set_config', { config });
+}
+
+export async function fetchInternetServer(): Promise<Server[]> {
+    return await invoke('fetch_internet_server');
+}
+
+export async function pingServer(server: Server): Promise<ServerInfo> {
+    return await invoke('ping_server', { server });
 }

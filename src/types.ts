@@ -13,3 +13,20 @@ export interface Config {
     game: GameConfig;
     internet: InternetConfig;
 }
+
+export interface Server {
+    ip: string;
+    port: number;
+    official: boolean;
+}
+
+export interface ServerInfo {
+    server: Server;
+    servername: string;
+    gamemode: string;
+    map: string;
+    players: number;
+    maxplayers: number;
+    password: boolean;
+    players_list: string[];
+}
