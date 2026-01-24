@@ -7,20 +7,13 @@
             :class="[
                 'inputbox-label',
                 labelClass,
-                effect
-                    ? 'inputbox-label-active'
-                    : 'inputbox-label-inactive'
+                effect ? 'inputbox-label-active' : 'inputbox-label-inactive',
             ]"
         >
             {{ placeholder }}
         </label>
 
-        <div
-            :class="[
-                'inputbox-input-container',
-                inputWrapperClass,
-            ]"
-        >
+        <div :class="['inputbox-input-container', inputWrapperClass]">
             <component
                 :is="mode === 'textarea' ? 'textarea' : 'input'"
                 ref="inputRef"
@@ -31,9 +24,12 @@
                 @focus="isFocus = true"
                 @blur="isFocus = false"
                 @input="handleInput"
+                @webkitdirectory="webkitdirectory"
                 :class="[
                     'inputbox-input-element',
-                    mode === 'input' ? 'inputbox-input-type' : 'inputbox-textarea-type',
+                    mode === 'input'
+                        ? 'inputbox-input-type'
+                        : 'inputbox-textarea-type',
                     inputClass,
                 ]"
             />
@@ -67,6 +63,10 @@ const props = defineProps({
     type: {
         type: String,
         default: 'text',
+    },
+    webkitdirectory: {
+        type: Boolean,
+        default: false,
     },
     placeholder: {
         type: String,

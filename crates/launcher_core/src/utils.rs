@@ -47,13 +47,13 @@ pub fn decode_gbk_trim_zero(data: &[u8]) -> String {
 }
 
 pub trait CRead {
-    fn read_buf(&mut self, len: usize) -> Vec<u8>;
+    fn read_buf(&mut self, len: usize) -> std::io::Result<Vec<u8>>;
 }
 
 impl<R: Read> CRead for BufReader<R> {
-    fn read_buf(&mut self, len: usize) -> Vec<u8> {
+    fn read_buf(&mut self, len: usize) -> std::io::Result<Vec<u8>> {
         let mut buf = vec![0; len];
-        self.read_exact(&mut buf).unwrap();
-        buf
+        self.read_exact(&mut buf)?;
+        Ok(buf)
     }
 }

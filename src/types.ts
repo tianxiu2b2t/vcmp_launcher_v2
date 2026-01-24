@@ -30,4 +30,20 @@ export interface ServerInfo {
     password: boolean;
     players_list: string[];
     version: string;
+    elapsed: Duration;
+}
+
+export interface Duration {
+    secs: number;
+    nanos: number;
+}
+
+export interface WindowSize {
+    width: number;
+    height: number;
+}
+
+export interface TabButton {
+    text: string;
+    path?: string;
 }

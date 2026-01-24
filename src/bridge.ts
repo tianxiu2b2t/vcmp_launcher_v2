@@ -35,6 +35,9 @@ export async function fetchInternetServers(): Promise<Server[]> {
     return await invoke('fetch_internet_servers');
 }
 
-export async function pingServer(server: Server): Promise<ServerInfo> {
-    return await invoke('ping_server', { server });
+export async function pingServer(
+    server: Server,
+    millis?: number,
+): Promise<ServerInfo> {
+    return await invoke('ping_server', { server, millis: millis || 10000 });
 }
