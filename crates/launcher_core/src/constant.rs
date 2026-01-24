@@ -37,7 +37,7 @@ static_urls!(MIRROR_UPDATE_URLS: [
 pub static ROOT: LazyLock<PathBuf> = LazyLock::new(|| {
     #[cfg(debug_assertions)]
     {
-        let root = PathBuf::from(Path::new("./runner"));
+        let root = PathBuf::from(Path::new("../../runner"));
         // mkdir if not exists
         if !root.exists() {
             std::fs::create_dir_all(&root).unwrap();
