@@ -11,13 +11,11 @@
         placeholder="更新客户端密码"
         v-model:model-value="config.internet.password"
     />
-    <!-- <InputEdit
+    <InputEdit
         placeholder="游戏目录"
         v-model:model-value="config.game.game_dir"
-        type="file"
-        webkitdirectory
-    /> -->
-    <input placeholder="游戏目录" :v-model="config.game.game_dir" type="file" webkitdirectory></input>
+    />
+    <!-- <input placeholder="游戏目录" :v-model="config.game.game_dir" type="file"></input> -->
     <InputEdit
         placeholder="用户名"
         v-model:model-value="config.game.username"

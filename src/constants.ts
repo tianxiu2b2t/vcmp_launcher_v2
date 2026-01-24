@@ -27,6 +27,11 @@ export const router = createRouter({
             name: 'Settings',
             component: () => import('./views/Settings.vue'),
         },
+        {
+            path: '/debug',
+            name: 'Debug',
+            component: () => import('./views/Debug.vue'),
+        },
     ],
 });
 
@@ -51,20 +56,10 @@ export async function refreshInternetServers() {
     const servers = await fetchInternetServers();
     await Promise.all(
         servers.map(async (v) => {
-            // const before_idx = internetServers.value.findIndex(
-            //     (s) => hashServer(v) === hashServer(s.server),
-            // );
-            // if (before_idx !== -1) {
-            //     // move to the end
-            //     internetServers.value.push(
-            //         internetServers.value.splice(before_idx, 1)[0],
-            //     );
-            // }
             const server = await pingServer(v);
             const idx = internetServers.value.findIndex(
                 (s) => hashServer(v) === hashServer(s.server),
             );
-            // find the server in the list
             if (idx !== -1) {
                 internetServers.value[idx] = server;
                 return;

@@ -22,6 +22,10 @@ const tabs = [
         text: t('tabs.settings'),
         path: '/settings',
     },
+    {
+        text: 'Debug',
+        path: '/debug',
+    },
 ];
 const active = ref<number>(0);
 </script>
