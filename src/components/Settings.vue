@@ -19,7 +19,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
 import InputEdit from './InputEdit.vue';
 import { config } from '../constants';
 </script>

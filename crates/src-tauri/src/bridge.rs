@@ -1,7 +1,7 @@
 // use launcher_core::config::Config;
 
 #[tauri::command]
-pub fn get_config() -> &'static launcher_core::config::Config {
+pub fn get_config() -> launcher_core::config::Config {
     launcher_core::config::get_config()
 }
 

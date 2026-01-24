@@ -1,4 +1,4 @@
-use std::sync::OnceLock;
+use std::sync::{OnceLock, RwLock};
 
 use serde::{Deserialize, Serialize};
 use tracing::{Level, event};
@@ -49,7 +49,7 @@ pub struct Config {
     pub game: GameConfig,
 }
 
-static CONFIG: OnceLock<Config> = OnceLock::new();
+static CONFIG: OnceLock<RwLock<Config>> = OnceLock::new();
 
 fn load_config_from_file() -> anyhow::Result<Config> {
     let content = std::fs::read_to_string(CONFIG_PATH.to_path_buf())?;
@@ -65,16 +65,16 @@ pub fn init_config() {
             Config::default()
         }
     };
-    CONFIG.set(config).unwrap();
+    CONFIG.set(RwLock::new(config)).unwrap();
 }
 
-pub fn get_config() -> &'static Config {
-    CONFIG.get().unwrap()
+pub fn get_config() -> Config {
+    CONFIG.get().unwrap().read().unwrap().clone()
 }
 
 pub fn save_config(config: &Config) -> anyhow::Result<()> {
     // first save to memory
-    CONFIG.set(config.clone()).unwrap();
+    CONFIG.get().unwrap().write().unwrap().clone_from(config);
     // then save to file
     let content = toml::to_string_pretty(config)?;
     std::fs::write(CONFIG_PATH.to_path_buf(), content)?;
