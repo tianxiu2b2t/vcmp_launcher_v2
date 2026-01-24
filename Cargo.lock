@@ -2180,6 +2180,7 @@ name = "launcher_core"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "encoding_rs",
  "reqwest 0.13.1",
  "serde",
  "serde_json",
