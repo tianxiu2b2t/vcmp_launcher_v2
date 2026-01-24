@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use std::sync::{OnceLock, RwLock};
 
 use serde::{Deserialize, Serialize};
@@ -19,7 +20,7 @@ pub struct InternetConfig {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GameConfig {
     #[serde(skip_serializing_if = "is_empty")]
-    pub game_dir: Option<std::path::PathBuf>,
+    game_dir: Option<String>,
     #[serde(skip_serializing_if = "is_empty")]
     pub username: Option<String>,
 }
@@ -45,6 +46,22 @@ impl InternetConfig {
         self.update_url.as_ref().and_then(|url_str| {
             url::Url::parse(url_str).map_err(|e| event!(Level::ERROR, "Failed to parse master url: '{url_str}', use default, {e}")).ok()
         }).unwrap_or_else(|| MIRROR_MASTER_URLS[0].clone())
+    }
+}
+
+impl GameConfig {
+    pub fn get_game_dir(&self) -> Option<PathBuf> {
+        self.game_dir.as_ref().map_or_else(
+            || None,
+            |v| {
+                let path = PathBuf::from(v);
+                if !path.exists() {
+                    event!(Level::WARN, "Game directory '{v}' does not exist");
+                    return None;   
+                }
+                Some(path)
+            }
+        )
     }
 }
 
