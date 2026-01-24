@@ -4,8 +4,8 @@ export interface GameConfig {
 }
 
 export interface InternetConfig {
-    master_url: string;
-    update_url: string;
+    master_url?: string;
+    update_url?: string;
     password?: string;
 }
 

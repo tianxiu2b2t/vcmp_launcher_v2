@@ -7,8 +7,10 @@ use crate::constant::{CONFIG_PATH, MIRROR_MASTER_URLS, MIRROR_UPDATE_URLS};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InternetConfig {
-    pub master_url: url::Url,
-    pub update_url: url::Url,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    master_url: Option<url::Url>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    update_url: Option<url::Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub password: Option<String>,
 }
@@ -24,10 +26,20 @@ pub struct GameConfig {
 impl Default for InternetConfig {
     fn default() -> Self {
         Self {
-            master_url: MIRROR_MASTER_URLS[0].clone(),
-            update_url: MIRROR_UPDATE_URLS[0].clone(),
+            master_url: Some(MIRROR_MASTER_URLS[0].clone()),
+            update_url: Some(MIRROR_UPDATE_URLS[0].clone()),
             password: None,
         }
+    }
+}
+
+impl InternetConfig {
+    pub fn get_master_url(&self) -> &url::Url {
+        self.master_url.as_ref().unwrap_or(&MIRROR_MASTER_URLS[0])
+    }
+
+    pub fn get_update_url(&self) -> &url::Url {
+        self.update_url.as_ref().unwrap_or(&MIRROR_UPDATE_URLS[0])
     }
 }
 
