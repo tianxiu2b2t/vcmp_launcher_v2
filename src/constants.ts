@@ -1,5 +1,6 @@
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
+import { getConfig, setConfig } from "./bridge";
 
 export const router = createRouter({
     history: createWebHistory(),
@@ -24,19 +25,24 @@ export const systemDarkMode = computed(() => {
 
 export const progressbar = ref(0);
 
-function increaseProgress() {
-    progressbar.value += 5;
-    if (progressbar.value > 100) {
-        progressbar.value = 100;
-        setTimeout(() => {
-            progressbar.value = 0;
-            increaseProgress()
-        }, 1500)
-    }
-    setTimeout(() => {
-        if (progressbar.value < 100) {
-            increaseProgress();
-        }
-    }, 100)
-}
-increaseProgress()
+// function increaseProgress() {
+//     progressbar.value += 5;
+//     if (progressbar.value > 100) {
+//         progressbar.value = 100;
+//         setTimeout(() => {
+//             progressbar.value = 0;
+//             increaseProgress()
+//         }, 1500)
+//     }
+//     setTimeout(() => {
+//         if (progressbar.value < 100) {
+//             increaseProgress();
+//         }
+//     }, 100)
+// }
+// increaseProgress()
+
+export const config = ref(await getConfig());
+watch(config, async (newConfig) => {
+    setConfig(newConfig)  
+})
