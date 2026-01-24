@@ -1,4 +1,4 @@
-import { computed, ref, watch } from "vue";
+import { computed, ref, toRef, watch } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { getConfig, setConfig } from "./bridge";
 
@@ -42,8 +42,8 @@ export const progressbar = ref(0);
 // }
 // increaseProgress()
 
-export const config = ref(await getConfig());
+export const config = toRef(await getConfig());
 watch(config, async (newConfig) => {
-    console.log(newConfig)
+    console.log('config', newConfig)
     setConfig(newConfig)  
-})
+}, {deep: true})
