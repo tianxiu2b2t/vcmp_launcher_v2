@@ -4,42 +4,47 @@ use serde::{Deserialize, Serialize};
 use tracing::{Level, event};
 
 use crate::constant::{CONFIG_PATH, MIRROR_MASTER_URLS, MIRROR_UPDATE_URLS};
+use crate::utils::is_empty;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InternetConfig {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    master_url: Option<url::Url>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    update_url: Option<url::Url>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "is_empty")]
+    master_url: Option<String>,
+    #[serde(skip_serializing_if = "is_empty")]
+    update_url: Option<String>,
+    #[serde(skip_serializing_if = "is_empty")]
     pub password: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GameConfig {
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "is_empty")]
     pub game_dir: Option<std::path::PathBuf>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "is_empty")]
     pub username: Option<String>,
 }
 
 impl Default for InternetConfig {
     fn default() -> Self {
         Self {
-            master_url: Some(MIRROR_MASTER_URLS[0].clone()),
-            update_url: Some(MIRROR_UPDATE_URLS[0].clone()),
+            master_url: Some(MIRROR_MASTER_URLS[0].clone().to_string()),
+            update_url: Some(MIRROR_UPDATE_URLS[0].clone().to_string()),
             password: None,
         }
     }
 }
 
 impl InternetConfig {
-    pub fn get_master_url(&self) -> &url::Url {
-        self.master_url.as_ref().unwrap_or(&MIRROR_MASTER_URLS[0])
+    pub fn get_master_url(&self) -> url::Url {
+        self.master_url.as_ref().and_then(|url_str| {
+            url::Url::parse(url_str).map_err(|e| event!(Level::ERROR, "Failed to parse master url: '{url_str}', use default, {e}")).ok()
+        }).unwrap_or_else(|| MIRROR_MASTER_URLS[0].clone())
     }
 
-    pub fn get_update_url(&self) -> &url::Url {
-        self.update_url.as_ref().unwrap_or(&MIRROR_UPDATE_URLS[0])
+    pub fn get_update_url(&self) -> url::Url {
+        self.update_url.as_ref().and_then(|url_str| {
+            url::Url::parse(url_str).map_err(|e| event!(Level::ERROR, "Failed to parse master url: '{url_str}', use default, {e}")).ok()
+        }).unwrap_or_else(|| MIRROR_MASTER_URLS[0].clone())
     }
 }
 
