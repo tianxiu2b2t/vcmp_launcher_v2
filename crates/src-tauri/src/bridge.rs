@@ -1,6 +1,6 @@
 // use launcher_core::config::Config;
 
-use launcher_core::server::ServerInfo;
+use launcher_core::server::{Server, ServerInfo};
 use tauri::AppHandle;
 
 use crate::state::TauriProgressbar;
@@ -44,4 +44,9 @@ pub async fn download_resource(app_handle: AppHandle, version: &str) -> tauri::R
     let version = launcher_core::resource::unpack_resource(version, &data)?;
     progressbar.set_status("Done");
     Ok(version)
+}
+
+#[tauri::command]
+pub async fn launch(server: Server) -> tauri::Result<()> {
+    Ok(())
 }
