@@ -1,4 +1,11 @@
+use std::sync::OnceLock;
+
+use tauri::AppHandle;
+
 pub mod bridge;
+pub mod state;
+
+pub static APP_HANDLE: OnceLock<&'static AppHandle> = OnceLock::new();
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() -> tauri::Result<()> {

@@ -5,3 +5,11 @@ members = [
     "crates/vcmp_core"
 ]
 resolver = "3"
+
+
+[profile.dev]
+# inherits = "release"  # 在开发时也使用发布优化
+
+[profile.release]
+codegen-units = 1
+lto = true
