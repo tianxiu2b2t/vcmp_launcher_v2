@@ -11,11 +11,11 @@ use vcmp_core::launch::LaunchConfig;
 struct Args {
     /// GTA Vice City安装目录
     #[arg(short, long, value_name = "PATH")]
-    gta_dir: PathBuf,
+    gta_exe: PathBuf,
 
     /// VCMP DLL目录
     #[arg(short, long, value_name = "PATH")]
-    dll_dir: PathBuf,
+    dll_file: PathBuf,
 
     /// 玩家用户名
     #[arg(short, long, value_name = "NAME")]
@@ -42,8 +42,8 @@ fn main() {
     };
 
     match vcmp_core::launch::launch_game(LaunchConfig::new(
-        args.gta_dir,
-        args.dll_dir,
+        args.gta_exe,
+        args.dll_file,
         args.username,
         ip_addr,
         args.port,

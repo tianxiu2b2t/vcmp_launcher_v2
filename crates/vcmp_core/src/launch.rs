@@ -13,8 +13,8 @@ pub mod windows;
 
 #[allow(unused)]
 fn inner_launch_game(
-    gta_dir: &Path,
-    dll_dir: &Path,
+    gta_exe: &Path,
+    dll_file: &Path,
     command_line: String,
 ) -> GameLauncherResult<u32> {
     #[cfg(not(target_os = "windows"))]
@@ -29,13 +29,13 @@ fn inner_launch_game(
     }
 
     #[allow(unused)]
-    windows::launcher_common_game(gta_dir, dll_dir, command_line)
+    windows::launcher_common_game(gta_exe, dll_file, command_line)
 }
 
 #[derive(Debug, Clone)]
 pub struct LaunchConfig {
-    gta_dir: PathBuf,
-    dll_dir: PathBuf,
+    gta_exe: PathBuf,
+    dll_file: PathBuf,
     username: String,
     password: Option<String>,
     ip: Ipv4Addr,
@@ -43,15 +43,15 @@ pub struct LaunchConfig {
 }
 impl LaunchConfig {
     pub fn new(
-        gta_dir: PathBuf,
-        dll_dir: PathBuf,
+        gta_exe: PathBuf,
+        dll_file: PathBuf,
         username: impl Into<String>,
         ip: Ipv4Addr,
         port: u16,
     ) -> Self {
         Self {
-            gta_dir,
-            dll_dir,
+            gta_exe,
+            dll_file,
             username: username.into(),
             password: None,
             ip,
@@ -76,5 +76,5 @@ pub fn launch_game(config: LaunchConfig) -> GameLauncherResult<u32> {
         command_line.push_str(&format!(" -z {}", password));
     }
 
-    inner_launch_game(&config.gta_dir, &config.dll_dir, command_line)
+    inner_launch_game(&config.gta_exe, &config.dll_file, command_line)
 }

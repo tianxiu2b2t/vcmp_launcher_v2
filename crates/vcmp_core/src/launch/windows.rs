@@ -22,18 +22,18 @@ fn get_wchar_t(content: &str) -> Vec<u16> {
 
 #[derive(Debug)]
 pub struct CommonGame {
-    pub gta_dir: PathBuf,
-    pub dll_dir: PathBuf,
+    pub gta_exe: PathBuf,
+    pub dll_file: PathBuf,
     pub pi: PROCESS_INFORMATION,
     pub inject_thread: Option<HANDLE>,
     pub launched: bool,
 }
 
 impl CommonGame {
-    pub fn new(gta_dir: PathBuf, dll_dir: PathBuf) -> Self {
+    pub fn new(gta_exe: PathBuf, dll_file: PathBuf) -> Self {
         Self {
-            gta_dir,
-            dll_dir,
+            gta_exe,
+            dll_file,
             pi: PROCESS_INFORMATION::default(),
             launched: false,
             inject_thread: None,
@@ -41,26 +41,25 @@ impl CommonGame {
     }
 
     pub fn launch(&mut self, command_line: String) -> GameLauncherResult<u32> {
-        let gta_exe = self.gta_dir.join("gta-vc.exe");
+        let gta_exe = self.gta_exe.parent()?;
 
         unsafe {
             CreateProcessW(
-                PCWSTR(get_wchar_t(gta_exe.to_str().unwrap()).as_ptr()),
+                PCWSTR(get_wchar_t(self.gta_exe.to_str().unwrap()).as_ptr()),
                 Some(PWSTR(get_wchar_t(&command_line).as_mut_ptr())),
                 None,
                 None,
                 false,
                 CREATE_SUSPENDED,
                 None,// Some(env_wide.as_mut_ptr() as *const c_void),
-                PCWSTR(get_wchar_t(self.gta_dir.to_str().unwrap()).as_ptr()),
+                PCWSTR(get_wchar_t(gta_exe.to_str().unwrap()).as_ptr()),
                 &STARTUPINFOW::default(),
                 &mut self.pi,
             )
             .map_err(|e| GameLauncherError::CreateProcessWFailed(e.message()))?;
         }
 
-        let dll_file = self.dll_dir.join("vcmp-game.dll");
-        let dll_wide = get_wchar_t(dll_file.to_str().unwrap());
+        let dll_wide = get_wchar_t(self.dll_file.to_str().unwrap());
         let byte_len = dll_wide.len() * 2 + 1; // 字节数
 
         let remote_buf = unsafe {
@@ -154,10 +153,10 @@ impl Drop for CommonGame {
 }
 
 pub fn launcher_common_game(
-    gta_dir: &Path,
-    dll_dir: &Path,
+    gta_exe: &Path,
+    dll_file: &Path,
     command_line: String,
 ) -> GameLauncherResult<u32> {
-    let mut game = CommonGame::new(gta_dir.to_path_buf(), dll_dir.to_path_buf());
+    let mut game = CommonGame::new(gta_exe.to_path_buf(), dll_file.to_path_buf());
     game.launch(command_line)
 }
