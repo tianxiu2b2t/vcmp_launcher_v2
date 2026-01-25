@@ -26,3 +26,10 @@ tokio = { version = "1.49.0", features = ["full"] }
 anyhow = "1.0.100"
 launcher_core = { path = "../launcher_core" }
 tauri-plugin-dialog = "2.6.0"
+
+[profile.dev]
+inherits = "release"  # 在开发时也使用发布优化
+
+[profile.release]
+codegen-units = 1
+lto = true

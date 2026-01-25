@@ -1,16 +1,6 @@
-use std::{sync::LazyLock, time::Duration};
-
 use anyhow::Result;
-use reqwest::Client;
 
-use crate::{models::InternetServerResponse, server::Server};
-
-static CLIENT: LazyLock<Client> = LazyLock::new(|| {
-    reqwest::ClientBuilder::new()
-        .connect_timeout(Duration::from_secs(5))
-        .build()
-        .unwrap()
-});
+use crate::{models::InternetServerResponse, server::Server, constant::CLIENT};
 
 pub async fn fetch_internet_servers() -> Vec<Server> {
     let config = crate::config::get_config();

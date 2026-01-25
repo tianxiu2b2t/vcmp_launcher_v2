@@ -1,7 +1,6 @@
-use std::{
-    path::{Path, PathBuf},
-    sync::LazyLock,
-};
+use std::{path::{Path, PathBuf}, sync::LazyLock, time::Duration};
+
+use reqwest::Client;
 
 pub fn serde_false() -> bool {
     false
@@ -59,3 +58,7 @@ pub static APPDATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
     path
 });
 pub static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| ROOT.join("./config.toml"));
+
+pub static CLIENT: LazyLock<Client> = LazyLock::new(|| {
+    reqwest::ClientBuilder::new().connect_timeout(Duration::from_secs(5)).build().unwrap()
+});
