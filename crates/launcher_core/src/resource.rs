@@ -2,7 +2,7 @@ use std::{collections::HashMap, io::{BufReader, Cursor}};
 use futures_util::StreamExt;
 use sevenz_rust2::{ArchiveReader, Password};
 
-use crate::{config::get_config, constant::{APPDATA_DIR, CLIENT, VERSIONS}, utils::{ProgressBar, ProgressbarBase}};
+use crate::{config::get_config, constant::{CLIENT, VERSIONS}, utils::{ProgressBar, ProgressbarBase}};
 
 async fn inner_download_resource(version: &str, progressbar: &mut dyn ProgressbarBase) -> anyhow::Result<Vec<u8>> {
     let update_url = get_config().internet.get_update_url().join("download")?;
