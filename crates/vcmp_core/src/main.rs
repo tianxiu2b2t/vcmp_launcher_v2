@@ -50,7 +50,7 @@ fn main() {
     )) {
         Ok(res) => {
             println!("pid: {res}")
-        },
+        }
         Err(e) => {
             eprintln!("Failed to launch game: {:?}", e);
         }

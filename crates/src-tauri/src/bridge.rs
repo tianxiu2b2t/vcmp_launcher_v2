@@ -19,7 +19,10 @@ pub async fn fetch_internet_servers() -> tauri::Result<Vec<launcher_core::server
 }
 
 #[tauri::command]
-pub async fn ping_server(server: launcher_core::server::Server, millis: u64) -> tauri::Result<ServerInfo> {
+pub async fn ping_server(
+    server: launcher_core::server::Server,
+    millis: u64,
+) -> tauri::Result<ServerInfo> {
     Ok(launcher_core::server::get_server_info(&server, millis).await?)
 }
 

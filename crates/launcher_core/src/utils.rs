@@ -1,4 +1,8 @@
-use std::{any::Any, borrow::Cow, io::{BufReader, Read}};
+use std::{
+    any::Any,
+    borrow::Cow,
+    io::{BufReader, Read},
+};
 
 // printable chars
 pub fn format_bytes(bytes: &[u8]) -> String {

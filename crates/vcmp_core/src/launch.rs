@@ -1,4 +1,7 @@
-use std::{net::Ipv4Addr, path::{Path, PathBuf}};
+use std::{
+    net::Ipv4Addr,
+    path::{Path, PathBuf},
+};
 
 #[allow(unused)]
 use crate::{GameLauncherError, GameLauncherResult};
@@ -9,7 +12,11 @@ pub mod linux;
 pub mod windows;
 
 #[allow(unused)]
-fn inner_launch_game(gta_dir: &Path, dll_dir: &Path, command_line: String) -> GameLauncherResult<u32> {
+fn inner_launch_game(
+    gta_dir: &Path,
+    dll_dir: &Path,
+    command_line: String,
+) -> GameLauncherResult<u32> {
     #[cfg(not(target_os = "windows"))]
     {
         return Err(GameLauncherError::NotSupportedPlatform);
@@ -28,7 +35,7 @@ fn inner_launch_game(gta_dir: &Path, dll_dir: &Path, command_line: String) -> Ga
 #[derive(Debug, Clone)]
 pub struct LaunchConfig {
     gta_dir: PathBuf,
-    dll_dir:  PathBuf,
+    dll_dir: PathBuf,
     username: String,
     password: Option<String>,
     ip: Ipv4Addr,
@@ -58,15 +65,11 @@ impl LaunchConfig {
     }
 }
 
-pub fn launch_game(
-    config: LaunchConfig,
-) -> GameLauncherResult<u32> {
+pub fn launch_game(config: LaunchConfig) -> GameLauncherResult<u32> {
     //         "-c -h 120.236.253.141 -c -p 8189 -n 2b2ttianxiu -z 123456".to_string(),
     let mut command_line = format!(
         "-c -h {} -c -p {} -n {}",
-        config.ip,
-        config.port,
-        config.username
+        config.ip, config.port, config.username
     );
     // if password
     if let Some(password) = config.password {

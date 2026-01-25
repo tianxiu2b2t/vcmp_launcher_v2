@@ -1,4 +1,7 @@
-use std::{path::{Path, PathBuf}, sync::LazyLock};
+use std::{
+    path::{Path, PathBuf},
+    sync::LazyLock,
+};
 
 pub fn serde_false() -> bool {
     false
@@ -44,7 +47,7 @@ pub static ROOT: LazyLock<PathBuf> = LazyLock::new(|| {
         }
         root
     }
-    
+
     #[cfg(not(debug_assertions))]
     PathBuf::from(Path::new("./"))
 });

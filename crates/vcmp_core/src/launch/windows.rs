@@ -1,4 +1,7 @@
+use std::collections::HashMap;
+use std::ffi::OsStr;
 use std::ffi::c_void;
+use std::os::windows::ffi::OsStrExt;
 use std::path::Path;
 use std::path::PathBuf;
 use windows::Win32::Foundation::*;
@@ -11,8 +14,6 @@ use windows::core::{PCSTR, PCWSTR, PWSTR};
 use crate::{GameLauncherError, GameLauncherResult};
 
 fn get_wchar_t(content: &str) -> Vec<u16> {
-    use std::ffi::OsStr;
-    use std::os::windows::ffi::OsStrExt;
     OsStr::new(content)
         .encode_wide()
         .chain(Some(0))
@@ -30,7 +31,13 @@ pub struct CommonGame {
 
 impl CommonGame {
     pub fn new(gta_dir: PathBuf, dll_dir: PathBuf) -> Self {
-        Self { gta_dir, dll_dir, pi: PROCESS_INFORMATION::default(), launched: false, inject_thread: None }
+        Self {
+            gta_dir,
+            dll_dir,
+            pi: PROCESS_INFORMATION::default(),
+            launched: false,
+            inject_thread: None,
+        }
     }
 
     pub fn launch(&mut self, command_line: String) -> GameLauncherResult<u32> {
@@ -44,7 +51,7 @@ impl CommonGame {
                 None,
                 false,
                 CREATE_SUSPENDED,
-                None,
+                None,// Some(env_wide.as_mut_ptr() as *const c_void),
                 PCWSTR(get_wchar_t(self.gta_dir.to_str().unwrap()).as_ptr()),
                 &STARTUPINFOW::default(),
                 &mut self.pi,
@@ -68,7 +75,7 @@ impl CommonGame {
         if remote_buf.is_null() {
             return Err(GameLauncherError::VirtualAllocExFailed);
         }
-        
+
         let mut written = 0usize;
         unsafe {
             WriteProcessMemory(
@@ -124,17 +131,18 @@ impl CommonGame {
     pub fn clean(&mut self) {
         unsafe {
             if !self.pi.hProcess.is_invalid() {
-                if !self.launched { TerminateProcess(self.pi.hProcess, 0).ok(); } else {
+                if !self.launched {
+                    TerminateProcess(self.pi.hProcess, 0).ok();
+                } else {
                     ResumeThread(self.pi.hThread);
                 }
-            } 
+            }
             if let Some(inject_thread) = self.inject_thread {
                 CloseHandle(inject_thread).ok();
                 self.inject_thread = None
             }
             CloseHandle(self.pi.hThread).ok();
             CloseHandle(self.pi.hProcess).ok();
-
         }
     }
 }

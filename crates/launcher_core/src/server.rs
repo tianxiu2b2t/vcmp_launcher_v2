@@ -1,9 +1,12 @@
-use std::{io::{BufReader}, net::IpAddr, time::Duration};
+use std::{io::BufReader, net::IpAddr, time::Duration};
 
-use serde::{Deserialize, Serialize};
-use tokio::time::{timeout};
-use crate::{constant::serde_false, utils::{CRead, decode_gbk, decode_gbk_trim_zero}};
+use crate::{
+    constant::serde_false,
+    utils::{CRead, decode_gbk, decode_gbk_trim_zero},
+};
 use anyhow::{Result, anyhow};
+use serde::{Deserialize, Serialize};
+use tokio::time::timeout;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Server {
@@ -40,18 +43,27 @@ impl TryFrom<(Server, Vec<u8>, Vec<u8>, Duration)> for ServerInfo {
             password: i.read_buf(1)?[0] == 1,
             players: u16::from_le_bytes(i.read_buf(2)?.as_slice().try_into().unwrap()),
             maxplayers: u16::from_le_bytes(i.read_buf(2)?.as_slice().try_into().unwrap()),
-            servername: decode_gbk({
-                let size = u32::from_le_bytes(i.read_buf(4)?.as_slice().try_into().unwrap());
-                i.read_buf(size as usize)?
-            }.as_slice()),
-            gamemode: decode_gbk({
-                let size = u32::from_le_bytes(i.read_buf(4)?.as_slice().try_into().unwrap());
-                i.read_buf(size as usize)?
-            }.as_slice()),
-            map: decode_gbk({
-                let size = u32::from_le_bytes(i.read_buf(4)?.as_slice().try_into().unwrap());
-                i.read_buf(size as usize)?
-            }.as_slice()),
+            servername: decode_gbk(
+                {
+                    let size = u32::from_le_bytes(i.read_buf(4)?.as_slice().try_into().unwrap());
+                    i.read_buf(size as usize)?
+                }
+                .as_slice(),
+            ),
+            gamemode: decode_gbk(
+                {
+                    let size = u32::from_le_bytes(i.read_buf(4)?.as_slice().try_into().unwrap());
+                    i.read_buf(size as usize)?
+                }
+                .as_slice(),
+            ),
+            map: decode_gbk(
+                {
+                    let size = u32::from_le_bytes(i.read_buf(4)?.as_slice().try_into().unwrap());
+                    i.read_buf(size as usize)?
+                }
+                .as_slice(),
+            ),
             players_list: {
                 let online = u16::from_le_bytes(c.read_buf(2)?.as_slice().try_into().unwrap());
                 let mut players = Vec::with_capacity(online as usize);
@@ -106,7 +118,7 @@ async fn inner_get_server_info(server: &Server) -> Result<ServerInfo> {
                 } else if p == b'c' {
                     recv_c.extend(data);
                 }
-            },
+            }
             Err(e) => {
                 return Err(e.into());
             }
@@ -115,14 +127,15 @@ async fn inner_get_server_info(server: &Server) -> Result<ServerInfo> {
     // println!("recv_i: {:?}", format_bytes(&recv_i));
     // println!("recv_c: {:?}", format_bytes(&recv_c));
 
-    Ok(ServerInfo::try_from((
-        server.clone(),
-        recv_i,
-        recv_c,
-        elapsed.unwrap()
-    )).map_err(|e| anyhow!("{server:?}: {e}")).unwrap())
+    Ok(
+        ServerInfo::try_from((server.clone(), recv_i, recv_c, elapsed.unwrap()))
+            .map_err(|e| anyhow!("{server:?}: {e}"))
+            .unwrap(),
+    )
 }
 
 pub async fn get_server_info(server: &Server, millis: u64) -> Result<ServerInfo> {
-    timeout(Duration::from_millis(millis), inner_get_server_info(server)).await.map_err(|e| anyhow!(e))?
+    timeout(Duration::from_millis(millis), inner_get_server_info(server))
+        .await
+        .map_err(|e| anyhow!(e))?
 }

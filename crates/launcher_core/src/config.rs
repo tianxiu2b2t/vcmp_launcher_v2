@@ -37,15 +37,35 @@ impl Default for InternetConfig {
 
 impl InternetConfig {
     pub fn get_master_url(&self) -> url::Url {
-        self.master_url.as_ref().and_then(|url_str| {
-            url::Url::parse(url_str).map_err(|e| event!(Level::ERROR, "Failed to parse master url: '{url_str}', use default, {e}")).ok()
-        }).unwrap_or_else(|| MIRROR_MASTER_URLS[0].clone())
+        self.master_url
+            .as_ref()
+            .and_then(|url_str| {
+                url::Url::parse(url_str)
+                    .map_err(|e| {
+                        event!(
+                            Level::ERROR,
+                            "Failed to parse master url: '{url_str}', use default, {e}"
+                        )
+                    })
+                    .ok()
+            })
+            .unwrap_or_else(|| MIRROR_MASTER_URLS[0].clone())
     }
 
     pub fn get_update_url(&self) -> url::Url {
-        self.update_url.as_ref().and_then(|url_str| {
-            url::Url::parse(url_str).map_err(|e| event!(Level::ERROR, "Failed to parse master url: '{url_str}', use default, {e}")).ok()
-        }).unwrap_or_else(|| MIRROR_MASTER_URLS[0].clone())
+        self.update_url
+            .as_ref()
+            .and_then(|url_str| {
+                url::Url::parse(url_str)
+                    .map_err(|e| {
+                        event!(
+                            Level::ERROR,
+                            "Failed to parse master url: '{url_str}', use default, {e}"
+                        )
+                    })
+                    .ok()
+            })
+            .unwrap_or_else(|| MIRROR_MASTER_URLS[0].clone())
     }
 }
 
@@ -57,10 +77,10 @@ impl GameConfig {
                 let path = PathBuf::from(v);
                 if !path.exists() {
                     event!(Level::WARN, "Game directory '{v}' does not exist");
-                    return None;   
+                    return None;
                 }
                 Some(path)
-            }
+            },
         )
     }
 }
