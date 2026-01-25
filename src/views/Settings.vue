@@ -13,7 +13,7 @@
     />
     <InputEdit
         placeholder="游戏目录"
-        v-model:model-value="config.game.game_dir"
+        v-model:model-value="config.game.game_exe"
     />
     <!-- <input placeholder="游戏目录" :v-model="config.game.game_dir" type="file"></input> -->
     <InputEdit

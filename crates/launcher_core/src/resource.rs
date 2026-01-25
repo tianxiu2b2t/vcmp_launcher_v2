@@ -2,7 +2,7 @@ use std::{collections::HashMap, io::{BufReader, Cursor}};
 use futures_util::StreamExt;
 use sevenz_rust2::{ArchiveReader, Password};
 
-use crate::{config::get_config, constant::{APPDATA_DIR, CLIENT}, utils::{ProgressBar, ProgressbarBase}};
+use crate::{config::get_config, constant::{APPDATA_DIR, CLIENT, VERSIONS}, utils::{ProgressBar, ProgressbarBase}};
 
 async fn inner_download_resource(version: &str, progressbar: &mut dyn ProgressbarBase) -> anyhow::Result<Vec<u8>> {
     let update_url = get_config().internet.get_update_url().join("download")?;
@@ -36,7 +36,7 @@ pub fn unpack_resource(
     data: &[u8],
 ) -> anyhow::Result<String> {
     // 7z! sevenz_rust2
-    let outdir = APPDATA_DIR.join("versions").join(version);
+    let outdir = VERSIONS.join(version);
     // mkdir
     std::fs::create_dir_all(&outdir)?;
     let mut reader = BufReader::new(Cursor::new(data));

@@ -1,6 +1,6 @@
 export interface GameConfig {
     username?: string;
-    game_dir?: string;
+    game_exe?: string;
 }
 
 export interface InternetConfig {

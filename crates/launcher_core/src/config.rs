@@ -20,7 +20,7 @@ pub struct InternetConfig {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GameConfig {
     #[serde(skip_serializing_if = "is_empty")]
-    game_dir: Option<String>,
+    game_exe: Option<String>,
     #[serde(skip_serializing_if = "is_empty")]
     pub username: Option<String>,
 }
@@ -70,13 +70,13 @@ impl InternetConfig {
 }
 
 impl GameConfig {
-    pub fn get_game_dir(&self) -> Option<PathBuf> {
-        self.game_dir.as_ref().map_or_else(
+    pub fn get_game_exe(&self) -> Option<PathBuf> {
+        self.game_exe.as_ref().map_or_else(
             || None,
             |v| {
                 let path = PathBuf::from(v);
                 if !path.exists() {
-                    event!(Level::WARN, "Game directory '{v}' does not exist");
+                    event!(Level::WARN, "Game application '{v}' does not exist");
                     return None;
                 }
                 Some(path)

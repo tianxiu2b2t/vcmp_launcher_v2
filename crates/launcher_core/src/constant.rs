@@ -58,7 +58,25 @@ pub static APPDATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
     path
 });
 pub static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| ROOT.join("./config.toml"));
+pub static VCMP_CORE_PATH: LazyLock<PathBuf> = LazyLock::new(|| {
+    let path = ROOT.join("libs");
+    if !path.exists() {
+        std::fs::create_dir_all(&path).unwrap();
+    }
+    path.join("vcmp_core.exe")
+});
+
+pub static VERSIONS: LazyLock<PathBuf> = LazyLock::new(|| {
+    let path = APPDATA_DIR.join("versions");
+    if !path.exists() {
+        std::fs::create_dir_all(&path).unwrap();
+    }
+    path
+});
+
+pub static VCMP_CORE: &[u8] = include_bytes!("../../../build/vcmp_core.exe");
 
 pub static CLIENT: LazyLock<Client> = LazyLock::new(|| {
     reqwest::ClientBuilder::new().connect_timeout(Duration::from_secs(5)).build().unwrap()
 });
+
