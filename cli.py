@@ -25,7 +25,7 @@ def build_vcmp_core():
         r.write(w.read())
 
 def dev_tauri():
-    subprocess.run(['yarn', 'tauri', 'dev'])
+    subprocess.run(['yarn', 'tauri', 'dev'], shell=True)
 
     
 if __name__ == '__main__':
