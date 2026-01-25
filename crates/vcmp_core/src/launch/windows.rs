@@ -41,7 +41,7 @@ impl CommonGame {
     }
 
     pub fn launch(&mut self, command_line: String) -> GameLauncherResult<u32> {
-        let gta_exe = self.gta_exe.parent()?;
+        let gta_dir = self.gta_exe.parent().unwrap();
 
         unsafe {
             CreateProcessW(
@@ -52,7 +52,7 @@ impl CommonGame {
                 false,
                 CREATE_SUSPENDED,
                 None,// Some(env_wide.as_mut_ptr() as *const c_void),
-                PCWSTR(get_wchar_t(gta_exe.to_str().unwrap()).as_ptr()),
+                PCWSTR(get_wchar_t(gta_dir.to_str().unwrap()).as_ptr()),
                 &STARTUPINFOW::default(),
                 &mut self.pi,
             )
