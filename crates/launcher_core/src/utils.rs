@@ -64,7 +64,7 @@ impl<R: Read> CRead for BufReader<R> {
     }
 }
 
-pub trait ProgressbarBase {
+pub trait ProgressbarBase: Send + Sync {
     fn update(&mut self, increase: usize);
     fn reset(&mut self);
     fn set_total(&mut self, total: usize);
@@ -110,4 +110,3 @@ impl ProgressbarBase for ProgressBar {
         self.current = current;
     }
 }
-// Default

@@ -53,7 +53,7 @@ impl TauriProgressbar {
     }
 
     fn emit(&self) {
-        self.app_handle.emit(&format!("progressbar-{}", self.id), json!({
+        self.app_handle.emit(&format!("progressbar_{}", self.id), json!({
             "status": self.status.clone(),
             "progress": self.inner.progress(),
             "total": self.inner.total,

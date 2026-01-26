@@ -37,6 +37,13 @@ pub fn open_folder_dialog() -> Option<String> {
 
 #[tauri::command]
 pub async fn download_resource(app_handle: AppHandle, version: &str) -> tauri::Result<String> {
+    Ok(inner_download_resource(app_handle, version).await.unwrap())
+}
+
+async fn inner_download_resource(
+    app_handle: AppHandle,
+    version: &str,
+) -> anyhow::Result<String> {
     let mut progressbar = TauriProgressbar::new(version.to_string(), app_handle);
     progressbar.set_status("Downloading resource");
     let data = launcher_core::resource::download_resource(version, Some(&mut progressbar)).await?;

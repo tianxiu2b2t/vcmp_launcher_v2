@@ -41,3 +41,7 @@ export async function pingServer(
 ): Promise<ServerInfo> {
     return await invoke('ping_server', { server, millis: millis || 10000 });
 }
+
+export async function downloadResource(version: string): Promise<string> {
+    return await invoke('download_resource', { version });
+}
