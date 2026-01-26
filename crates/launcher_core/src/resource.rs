@@ -7,11 +7,12 @@ use crate::{config::get_config, constant::{CLIENT, VERSIONS}, utils::{ProgressBa
 async fn inner_download_resource(version: &str, progressbar: &mut dyn ProgressbarBase) -> anyhow::Result<Vec<u8>> {
     let update_url = get_config().internet.get_update_url().join("download")?;
     // post form json
-    let mut form = HashMap::new();
-    form.insert("json", serde_json::json!({
+    let req_data = serde_json::to_string(&serde_json::json!({
         "version": version,
         "password": get_config().internet.password,
-    }));
+    })).unwrap();
+    let mut form = HashMap::new();
+    form.insert("json", req_data);
     let req = CLIENT.post(update_url).form(&form).send().await?;
     let req = req.error_for_status()?;
     let total = req.content_length().unwrap_or(0);
