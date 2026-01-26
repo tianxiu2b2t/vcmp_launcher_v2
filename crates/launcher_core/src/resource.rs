@@ -1,4 +1,4 @@
-use std::{collections::HashMap, io::{BufReader, Cursor}};
+use std::io::{BufReader, Cursor};
 use futures_util::StreamExt;
 use sevenz_rust2::{ArchiveReader, Password};
 
@@ -11,9 +11,7 @@ async fn inner_download_resource(version: &str, progressbar: &mut dyn Progressba
         "version": version,
         "password": get_config().internet.password,
     })).unwrap();
-    let mut form = HashMap::new();
-    form.insert("json", req_data);
-    let req = CLIENT.post(update_url).form(&form).send().await?;
+    let req = CLIENT.post(update_url).multipart(reqwest::multipart::Form::new().text("json", req_data)).send().await?;
     let req = req.error_for_status()?;
     let total = req.content_length().unwrap_or(0);
     progressbar.set_total(total as usize);
