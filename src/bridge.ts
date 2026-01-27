@@ -42,6 +42,13 @@ export async function pingServer(
     return await invoke('ping_server', { server, millis: millis || 10000 });
 }
 
-export async function downloadResource(version: string): Promise<string> {
-    return await invoke('download_resource', { version });
+export async function downloadResource(
+    version: string,
+    echoId: string,
+): Promise<string> {
+    return await invoke('download_resource', { version, echoId });
+}
+
+export async function getRandomObjectId(): Promise<string> {
+    return await invoke('random_object_id');
 }

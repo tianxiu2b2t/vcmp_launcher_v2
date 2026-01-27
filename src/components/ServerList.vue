@@ -2,12 +2,12 @@
     <table>
         <thead>
             <tr>
-                <th>Lock</th>
-                <th>Server Name</th>
-                <th>Ping</th>
-                <th>Players</th>
-                <th>Version</th>
-                <th>Gamemode</th>
+                <th></th>
+                <th>{{ $t('list.servername') }}</th>
+                <th>{{ $t('list.ping') }}</th>
+                <th>{{ $t('list.players') }}</th>
+                <th>{{ $t('list.version') }}</th>
+                <th>{{ $t('list.gamemode') }}</th>
             </tr>
         </thead>
         <tbody>

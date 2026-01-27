@@ -88,7 +88,11 @@ impl ProgressBar {
     }
 
     pub fn progress(&self) -> f32 {
-        self.current as f32 / self.total as f32
+        if self.total == 0 {
+            0.0
+        } else {
+            (self.current as f32 / self.total as f32) * 100.0
+        }
     }
 }
 

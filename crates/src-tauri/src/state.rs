@@ -22,19 +22,23 @@ impl TauriProgressbar {
 
 impl ProgressbarBase for TauriProgressbar {
     fn reset(&mut self) {
-        self.inner.reset()
+        self.inner.reset();
+        self.emit();
     }
 
     fn set_total(&mut self, total: usize) {
-        self.inner.set_total(total)
+        self.inner.set_total(total);
+        self.emit();
     }
 
     fn set_current(&mut self, current: usize) {
-        self.inner.set_current(current)
+        self.inner.set_current(current);
+        self.emit();
     }
 
     fn update(&mut self, increase: usize) {
-        self.inner.update(increase)
+        self.inner.update(increase);
+        self.emit();
     }
 }
 
