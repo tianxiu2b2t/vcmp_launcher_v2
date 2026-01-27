@@ -10,10 +10,10 @@ pub struct TauriProgressbar {
 }
 
 impl TauriProgressbar {
-    pub fn new(id: String, app_handle: AppHandle) -> Self {
+    pub fn new(id: impl Into<String>, app_handle: AppHandle) -> Self {
         Self {
             inner: ProgressBar::default(),
-            id,
+            id: id.into(),
             status: String::new(),
             app_handle,
         }
@@ -53,7 +53,7 @@ impl TauriProgressbar {
     }
 
     fn emit(&self) {
-        self.app_handle.emit(&format!("progressbar_{}", self.id), json!({
+        self.app_handle.emit(self.id.as_str(), json!({
             "status": self.status.clone(),
             "progress": self.inner.progress(),
             "total": self.inner.total,

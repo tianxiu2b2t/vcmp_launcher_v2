@@ -3,7 +3,7 @@
 use launcher_core::server::{Server, ServerInfo};
 use tauri::AppHandle;
 
-use crate::state::TauriProgressbar;
+use crate::{state::TauriProgressbar, utils::object_id};
 
 #[tauri::command]
 pub fn get_config() -> launcher_core::config::Config {
@@ -36,21 +36,19 @@ pub fn open_folder_dialog() -> Option<String> {
 
 
 #[tauri::command]
-pub async fn download_resource(app_handle: AppHandle, version: &str) -> tauri::Result<String> {
-    Ok(inner_download_resource(app_handle, version).await.unwrap())
-}
-
-async fn inner_download_resource(
-    app_handle: AppHandle,
-    version: &str,
-) -> anyhow::Result<String> {
-    let mut progressbar = TauriProgressbar::new(version.to_string(), app_handle);
+pub async fn download_resource(app_handle: AppHandle, version: &str, echo_id: &str) -> tauri::Result<String> {
+    let mut progressbar = TauriProgressbar::new(echo_id.to_string(), app_handle);
     progressbar.set_status("Downloading resource");
     let data = launcher_core::resource::download_resource(version, Some(&mut progressbar)).await?;
     progressbar.set_status("Unpacking resource");
     let version = launcher_core::resource::unpack_resource(version, &data)?;
     progressbar.set_status("Done");
     Ok(version)
+}
+
+#[tauri::command]
+pub fn random_object_id() -> String {
+    object_id()
 }
 
 #[tauri::command]

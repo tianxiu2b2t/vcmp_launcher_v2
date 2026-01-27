@@ -1,12 +1,16 @@
 use tracing::event;
 
-use crate::{config::get_config, constant::{VCMP_CORE, VCMP_CORE_PATH, VERSIONS}, server::Server};
+use crate::{config::get_config, constant::{VCMP_CORE, VCMP_CORE_PATH}, server::Server};
 
 pub fn unpack() {
     match std::fs::write(VCMP_CORE_PATH.to_path_buf(), VCMP_CORE) {
         Ok(_) => event!(tracing::Level::INFO, "Unpacked vcmp-core"),
         Err(e) => event!(tracing::Level::ERROR, "Failed to unpack vcmp-core: {}", e),
     };
+}
+
+pub fn init() {
+    unpack();
 }
 
 pub fn launch(server: Server, version: impl Into<String>, password: Option<String>) {

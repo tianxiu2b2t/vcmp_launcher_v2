@@ -43,7 +43,7 @@ pub fn unpack_resource(
     // mkdir
     std::fs::create_dir_all(&outdir)?;
     let mut reader = BufReader::new(Cursor::new(data));
-    let version = ArchiveReader::new(&mut reader, Password::empty()).map_err(|f| anyhow::anyhow!("7z reader failed"))?.read_file("version.txt").map_err(|e| anyhow!(("Failed to read version.txt")))?;
+    let version = ArchiveReader::new(&mut reader, Password::empty()).map_err(|_| anyhow::anyhow!("7z reader failed"))?.read_file("version.txt").map_err(|_| anyhow!("Failed to read version.txt"))?;
     sevenz_rust2::decompress(
         &mut reader,
         outdir,
