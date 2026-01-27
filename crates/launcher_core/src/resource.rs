@@ -1,15 +1,16 @@
 use std::io::{BufReader, Cursor};
+use anyhow::anyhow;
 use futures_util::StreamExt;
 use sevenz_rust2::{ArchiveReader, Password};
 
 use crate::{config::get_config, constant::{CLIENT, VERSIONS}, utils::{ProgressBar, ProgressbarBase}};
 
 async fn inner_download_resource(version: &str, progressbar: &mut dyn ProgressbarBase) -> anyhow::Result<Vec<u8>> {
-    let update_url = get_config().internet.get_update_url().join("download")?;
+    let update_url = get_config().internet.get_update_url().join("download/")?;
     // post form json
     let req_data = serde_json::to_string(&serde_json::json!({
         "version": version,
-        "password": get_config().internet.password,
+        "password": get_config().internet.password.unwrap_or_default(),
     })).unwrap();
     let req = CLIENT.post(update_url).multipart(reqwest::multipart::Form::new().text("json", req_data)).send().await?;
     let req = req.error_for_status()?;
@@ -34,12 +35,15 @@ pub fn unpack_resource(
     version: &str,
     data: &[u8],
 ) -> anyhow::Result<String> {
+    if data.is_empty() {
+        return Err(anyhow!("Resource is empty"))
+    }
     // 7z! sevenz_rust2
     let outdir = VERSIONS.join(version);
     // mkdir
     std::fs::create_dir_all(&outdir)?;
     let mut reader = BufReader::new(Cursor::new(data));
-    let version = ArchiveReader::new(&mut reader, Password::empty())?.read_file("VERSION.txt")?;
+    let version = ArchiveReader::new(&mut reader, Password::empty()).map_err(|f| anyhow::anyhow!("7z reader failed"))?.read_file("version.txt").map_err(|e| anyhow!(("Failed to read version.txt")))?;
     sevenz_rust2::decompress(
         &mut reader,
         outdir,
