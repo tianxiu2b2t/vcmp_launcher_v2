@@ -6,6 +6,8 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
+use crate::models::Server;
+
 // printable chars
 pub fn format_bytes(bytes: &[u8]) -> String {
     let mut result = String::new();
@@ -51,6 +53,11 @@ pub fn decode_gbk_trim_zero(data: &[u8]) -> String {
     str.retain(|c| c != '\0');
     str
 }
+
+pub fn hash_server(server: Server) -> String {
+    format!("{}-{}", server.ip, server.port)
+}
+
 
 pub trait CRead {
     fn read_buf(&mut self, len: usize) -> std::io::Result<Vec<u8>>;

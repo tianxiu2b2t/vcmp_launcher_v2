@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use crate::{models::InternetServerResponse, server::Server, constant::CLIENT};
+use crate::{constant::CLIENT, models::{InternetServerResponse, Server}};
 
 pub async fn fetch_internet_servers() -> Vec<Server> {
     let config = crate::config::get_config();

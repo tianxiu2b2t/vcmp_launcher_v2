@@ -1,34 +1,10 @@
 use std::{io::BufReader, net::IpAddr, time::Duration};
 
 use crate::{
-    constant::serde_false,
-    utils::{CRead, decode_gbk, decode_gbk_trim_zero},
+    models::{Server, ServerInfo}, utils::{CRead, decode_gbk, decode_gbk_trim_zero}
 };
 use anyhow::{Result, anyhow};
-use serde::{Deserialize, Serialize};
 use tokio::time::timeout;
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct Server {
-    ip: IpAddr,
-    port: u16,
-    #[serde(default = "serde_false", rename = "is_official")]
-    official: bool,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct ServerInfo {
-    pub server: Server,
-    pub servername: String,
-    pub gamemode: String,
-    pub map: String,
-    pub players: u16,
-    pub maxplayers: u16,
-    pub password: bool,
-    pub players_list: Vec<String>,
-    pub version: String,
-    pub elapsed: Duration,
-}
 
 impl TryFrom<(Server, Vec<u8>, Vec<u8>, Duration)> for ServerInfo {
     type Error = anyhow::Error;

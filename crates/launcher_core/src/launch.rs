@@ -1,6 +1,6 @@
 use tracing::event;
 
-use crate::{config::get_config, constant::{VCMP_CORE, VCMP_CORE_PATH}, server::Server};
+use crate::{config::get_config, constant::{VCMP_CORE, VCMP_CORE_PATH}, models::Server};
 
 pub fn unpack() {
     match std::fs::write(VCMP_CORE_PATH.to_path_buf(), VCMP_CORE) {

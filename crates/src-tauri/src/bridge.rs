@@ -1,6 +1,6 @@
 // use launcher_core::config::Config;
 
-use launcher_core::server::{Server, ServerInfo};
+use launcher_core::models::{Server, ServerInfo};
 use tauri::AppHandle;
 
 use crate::{state::TauriProgressbar, utils::object_id};
@@ -17,13 +17,13 @@ pub fn set_config(config: launcher_core::config::Config) -> tauri::Result<()> {
 }
 
 #[tauri::command]
-pub async fn fetch_internet_servers() -> tauri::Result<Vec<launcher_core::server::Server>> {
+pub async fn fetch_internet_servers() -> tauri::Result<Vec<launcher_core::models::Server>> {
     Ok(launcher_core::internet::fetch_internet_servers().await)
 }
 
 #[tauri::command]
 pub async fn ping_server(
-    server: launcher_core::server::Server,
+    server: launcher_core::models::Server,
     millis: u64,
 ) -> tauri::Result<ServerInfo> {
     Ok(launcher_core::server::get_server_info(&server, millis).await?)
@@ -52,6 +52,7 @@ pub fn random_object_id() -> String {
 }
 
 #[tauri::command]
-pub async fn launch(server: Server) -> tauri::Result<()> {
+pub async fn launch(server: Server, version: &str, password: Option<String>) -> tauri::Result<()> {
+    launcher_core::launch::launch(server, version, password);
     Ok(())
 }
