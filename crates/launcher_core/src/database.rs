@@ -1,8 +1,11 @@
+use std::sync::OnceLock;
+
 use sqlx::Row;
 use tracing::event;
 
 use crate::{constant::APPDATA_DIR, models::{HistoryServerFromDatabase, RawHistoryServerFromDatabase, RawServerFromDatabase, Server, ServerFromDatabase}};
 
+#[derive(Debug)]
 pub struct Database {
     pool: sqlx::Pool<sqlx::Sqlite>
 }
@@ -134,4 +137,15 @@ impl Database {
     // pub async fn add_favourite(&self, address: &str, port: u16, password: &str) {
         
     // }
+}
+
+static DATABASE: OnceLock<Database> = OnceLock::new();
+
+pub fn get_database() -> &'static Database {
+    DATABASE.get().unwrap()
+}
+
+pub async fn init_database() {
+    let database = Database::new().await;
+    DATABASE.set(database).unwrap();
 }
