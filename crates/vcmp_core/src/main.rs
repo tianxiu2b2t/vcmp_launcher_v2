@@ -13,7 +13,7 @@ struct Args {
     #[arg(short, long, value_name = "PATH")]
     gta_exe: PathBuf,
 
-    /// VCMP DLL目录
+    /// VCMP DLL文件
     #[arg(short, long, value_name = "PATH")]
     dll_file: PathBuf,
 
@@ -28,6 +28,10 @@ struct Args {
     /// 服务器端口
     #[arg(short, long, value_name = "PORT")]
     port: u16,
+
+    /// 重定向DLL目录
+    #[arg(short, long, value_name = "PATH")]
+    redirect_dll_path: PathBuf,
 }
 
 fn main() {
@@ -47,6 +51,7 @@ fn main() {
         args.username,
         ip_addr,
         args.port,
+        args.redirect_dll_path,
     )) {
         Ok(res) => {
             println!("pid: {res}")

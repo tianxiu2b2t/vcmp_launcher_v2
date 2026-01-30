@@ -65,6 +65,13 @@ pub static VCMP_CORE_PATH: LazyLock<PathBuf> = LazyLock::new(|| {
     }
     path.join("vcmp_core.exe")
 });
+pub static LIBRARY_REDIRECTOR_PATH: LazyLock<PathBuf> = LazyLock::new(|| {
+    let path = ROOT.join("libs");
+    if !path.exists() {
+        std::fs::create_dir_all(&path).unwrap();
+    }
+    path.join("library_redirector.dll")
+});
 
 pub static VERSIONS: LazyLock<PathBuf> = LazyLock::new(|| {
     let path = APPDATA_DIR.join("versions");
@@ -75,6 +82,7 @@ pub static VERSIONS: LazyLock<PathBuf> = LazyLock::new(|| {
 });
 
 pub static VCMP_CORE: &[u8] = include_bytes!("../../../build/vcmp_core.exe");
+pub static LIBRARY_REDIRECTOR: &[u8] = include_bytes!("../../../build/library_redirector.dll");
 
 pub static CLIENT: LazyLock<Client> = LazyLock::new(|| {
     reqwest::ClientBuilder::new().connect_timeout(Duration::from_secs(5)).build().unwrap()

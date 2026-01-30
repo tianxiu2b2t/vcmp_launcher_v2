@@ -40,6 +40,7 @@ def dev_tauri():
 if __name__ == '__main__':
     subprocess.run(['rustup', 'target', 'add', target])
     build_vcmp_core()
+    build_library_redirector()
     if args.mode == 'dev':
         dev_tauri()
     # elif args.mode == 'build':

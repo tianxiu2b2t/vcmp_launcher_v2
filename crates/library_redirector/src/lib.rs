@@ -4,14 +4,14 @@
 use std::path::PathBuf;
 
 #[cfg(windows)]
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "system" fn DllMain(
     hinst_dll: usize,
     fdw_reason: u32,
     lpv_reserved: *const u8,
 ) -> bool {
     // env
-    let redirect_dir = PathBuf::from(std::env::var("REDIRECT_DIR").unwrap_or_default());
+    let redirect_dir = PathBuf::from(std::env::var("VCMP_REDIRECT_DLL_PATH").unwrap_or_default());
     // 获取当前文件名字（也就是这个dll的名字）
     let name = std::env::current_exe().unwrap();
     let dll_name = name.file_name().unwrap().to_str().unwrap();

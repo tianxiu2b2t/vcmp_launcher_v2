@@ -52,7 +52,6 @@ pub fn random_object_id() -> String {
 }
 
 #[tauri::command]
-pub async fn launch(server: Server, version: &str, password: Option<String>) -> tauri::Result<()> {
-    launcher_core::launch::launch(server, version, password);
-    Ok(())
+pub async fn launch(server: Server, version: &str, password: Option<String>) -> tauri::Result<u32> {
+    Ok(launcher_core::launch::launch(server, version, password)?)
 }

@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::ffi::OsStr;
 use std::ffi::c_void;
 use std::os::windows::ffi::OsStrExt;
@@ -24,24 +23,120 @@ fn get_wchar_t(content: &str) -> Vec<u16> {
 pub struct CommonGame {
     pub gta_exe: PathBuf,
     pub dll_file: PathBuf,
+    pub redirect_dll_path: PathBuf,
     pub pi: PROCESS_INFORMATION,
     pub inject_thread: Option<HANDLE>,
     pub launched: bool,
 }
 
 impl CommonGame {
-    pub fn new(gta_exe: PathBuf, dll_file: PathBuf) -> Self {
+    pub fn new(gta_exe: PathBuf, dll_file: PathBuf, redirect_dll_path: PathBuf) -> Self {
         Self {
             gta_exe,
             dll_file,
             pi: PROCESS_INFORMATION::default(),
             launched: false,
             inject_thread: None,
+            redirect_dll_path,
         }
     }
 
     pub fn launch(&mut self, command_line: String) -> GameLauncherResult<u32> {
         let gta_dir = self.gta_exe.parent().unwrap();
+        // 2. 创建自定义环境变量字符串
+        let mut env_vars = vec![
+            // ("ALLUSERSPROFILE", "C:\\ProgramData"),
+            // ("APPDATA", "D:\\Files\\TestVC"),
+            // ("COMPUTERNAME", "2B2TTIANXIU"),
+            // ("ComSpec", "C:\\WINDOWS\\system32\\cmd.exe"),
+            // ("CURL_HOME", "D:\\curl-8.12.1_1-win64-mingw\\bin"),
+            // ("DevEco Studio", "D:\\DevEco Studio\\bin;"),
+            // ("DriverData", "C:\\Windows\\System32\\Drivers\\DriverData"),
+            // ("EFC_10088_1262719628", "1"),
+            // ("EFC_10088_1592913036", "1"),
+            // ("EFC_10088_2283032206", "1"),
+            // ("EFC_10088_2775293581", "1"),
+            // ("EFC_10088_3789132940", "1"),
+            // ("FPS_BROWSER_APP_PROFILE_STRING", "Internet Explorer"),
+            // ("FPS_BROWSER_USER_PROFILE_STRING", "Default"),
+            // (
+            //     "GIT_ASKPASS",
+            //     "d:\\Microsoft VS Code\\resources\\app\\extensions\\git\\dist\\askpass.sh",
+            // ),
+            // ("HOMEDRIVE", "C:"),
+            // ("HOMEPATH", "\\Users\\2b2ttianxiu"),
+            // (
+            //     "IntelliJ IDEA Community Edition",
+            //     "D:\\idea\\IntelliJ IDEA Community Edition 2024.2\\bin;",
+            // ),
+            // ("LANG", "en_US.UTF-8"),
+            // (
+            //     "LD_LIBRARY_PATH",
+            //     "C:\\Users\\2b2ttianxiu\\.rustup\\toolchains\\nightly-x86_64-pc-windows-msvc\\lib",
+            // ),
+            // ("LOCALAPPDATA", "C:\\Users\\2b2ttianxiu\\AppData\\Local"),
+            // ("LOGONSERVER", "\\\\2B2TTIANXIU"),
+            // ("MSVC_CL", "D:\\VCS\\VC\\Tools\\MSVC\\14.40.33807\\bin\\"),
+            // ("NODE_HOME", "D:\\nodejs"),
+            // ("NUMBER_OF_PROCESSORS", "4"),
+            // ("OS", "Windows_NT"),
+            // (
+            //     "OUT_DIR",
+            //     "D:\\workspaces\\vcmp_launcher_v2\\target\\i686-pc-windows-msvc\\debug\\build\\vcmp_core-f45103b127fced34\\out",
+            // ),
+            // (
+            //     "Path",
+            //     "D:\\workspaces\\vcmp_launcher_v2\\target\\i686-pc-windows-msvc\\debug;D:\\workspaces\\vcmp_launcher_v2\\target\\i686-pc-windows-msvc\\debug\\deps;C:\\Users\\2b2ttianxiu\\.rustup\\toolchains\\nightly-x86_64-pc-windows-msvc\\lib\\rustlib\\i686-pc-windows-msvc\\lib;C:\\Program Files\\PowerShell\\7;c:\\Users\\2b2ttianxiu\\AppData\\Roaming\\Code\\User\\globalStorage\\github.copilot-chat\\debugCommand;c:\\Users\\2b2ttianxiu\\AppData\\Roaming\\Code\\User\\globalStorage\\github.copilot-chat\\copilotCli;C:\\Program Files\\Zulu\\zulu-25\\bin\\;D:\\curl-8.12.1_1-win64-mingw\\bin;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath;C:\\Program Files\\Common Files\\Oracle\\Java\\javapath;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common;C:\\Program Files\\Bandizip\\;C:\\Program Files\\Git\\cmd;C:\\Program Files\\dotnet\\;D:\\OpenSSL-Win64\\bin;D:\\Windows Kits\\10\\Windows Performance Toolkit\\;D:\\go\\bin;C:\\Program Files\\CMake\\bin;D:\\llvm-mingw-20250402-msvcrt-x86_64\\bin;%NODE_PATH%;D:\\nodejs\\node_global;D:\\nodejs\\node_cache;D:\\nodejs;C:\\Users\\2b2ttianxiu\\AppData\\Roaming\\npm;D:\\ffmpeg;D:\\vcpkg;D:\\VCS\\VC\\Tools\\MSVC\\14.40.33807\\bin\\\\Hostx64\\x64;D:\\VCS\\VC\\Tools\\MSVC\\14.40.33807\\bin\\\\Hostx64\\x86;D:\\VCS\\VC\\Tools\\MSVC\\14.40.33807\\bin\\\\Hostx86\\x64;D:\\VCS\\VC\\Tools\\MSVC\\14.40.33807\\bin\\\\Hostx86\\x86;C:\\Program Files\\NVIDIA Corporation\\NVIDIA App\\NvDLISR;D:\\adb;C:\\Program Files (x86)\\PowerShell\\7\\;C:\\Program Files\\PowerShell\\7\\;D:\\easyshare\\x86\\;D:\\easyshare\\x64\\;C:\\Users\\2b2ttianxiu\\.cargo\\bin;C:\\Users\\2b2ttianxiu\\AppData\\Local\\Programs\\Python\\Python312\\Scripts\\;C:\\Users\\2b2ttianxiu\\AppData\\Local\\Programs\\Python\\Python312\\;C:\\Users\\2b2ttianxiu\\AppData\\Local\\Programs\\Python\\Launcher\\;C:\\Users\\2b2ttianxiu\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Program Files\\Tesseract-OCR;D:\\idea\\IntelliJ IDEA Community Edition 2024.2\\bin;D:\\sqlite3;D:\\Microsoft VS Code\\bin;C:\\Users\\2b2ttianxiu\\.dotnet\\tools;Z:\\ffmpeg\\bin;C:\\Users\\2b2ttianxiu\\go\\bin;D:\\Mongodb\\sh\\;D:\\nodejs\\node_global;C:\\Users\\2b2ttianxiu\\AppData\\Roaming\\npm;D:\\ffmpeg;D:\\vcpkg;C:\\Users\\2b2ttianxiu\\AppData\\Local\\JetBrains\\Toolbox\\scripts;D:\\VCS\\VC\\Tools\\MSVC\\14.40.33807\\bin\\\\Hostx64\\x64;D:\\VCS\\VC\\Tools\\MSVC\\14.40.33807\\bin\\\\Hostx86\\x64;D:\\VCS\\VC\\Tools\\MSVC\\14.40.33807\\bin\\\\Hostx64\\x86;D:\\VCS\\VC\\Tools\\MSVC\\14.40.33807\\bin\\\\Hostx86\\x86;C:\\Users\\2b2ttianxiu\\AppData\\Local\\Microsoft\\WindowsApps;D:\\adb;C:\\Users\\2b2ttianxiu\\AppData\\Local\\Programs\\Zed Nightly\\bin;D:\\RustRover 2025.2.2\\bin;D:\\DevEco Studio\\bin;;C:\\Users\\2b2ttianxiu\\AppData\\Local\\GitHubDesktop\\bin;C:\\Users\\2b2ttianxiu\\.rustup\\toolchains\\nightly-x86_64-pc-windows-msvc\\bin",
+            // ),
+            // (
+            //     "PATHEXT",
+            //     ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.CPL",
+            // ),
+            // ("POWERSHELL_DISTRIBUTION_CHANNEL", "MSI:Windows 10 Pro"),
+            // ("PROCESSOR_ARCHITECTURE", "x86"),
+            // ("PROCESSOR_ARCHITEW6432", "AMD64"),
+            // (
+            //     "PROCESSOR_IDENTIFIER",
+            //     "Intel64 Family 6 Model 158 Stepping 9, GenuineIntel",
+            // ),
+            // ("PROCESSOR_LEVEL", "6"),
+            // ("PROCESSOR_REVISION", "9e09"),
+            // ("ProgramData", "C:\\ProgramData"),
+            // ("ProgramFiles", "C:\\Program Files (x86)"),
+            // ("ProgramFiles(x86)", "C:\\Program Files (x86)"),
+            // ("ProgramW6432", "C:\\Program Files"),
+            // (
+            //     "PSModulePath",
+            //     "D:\\Documents\\PowerShell\\Modules;C:\\Program Files\\PowerShell\\Modules;c:\\program files\\powershell\\7\\Modules;C:\\Program Files\\WindowsPowerShell\\Modules;C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\Modules",
+            // ),
+            // ("SESSIONNAME", "Console"),
+            // ("SystemDrive", "C:"),
+            // ("SystemRoot", "C:\\WINDOWS"),
+            // ("TEMP", "C:\\Users\\2B2TTI~1\\AppData\\Local\\Temp"),
+            // ("TMP", "C:\\Users\\2B2TTI~1\\AppData\\Local\\Temp"),
+            // ("USERDOMAIN", "2B2TTIANXIU"),
+            // ("USERDOMAIN_ROAMINGPROFILE", "2B2TTIANXIU"),
+            // ("USERNAME", "2b2ttianxiu"),
+            // ("USERPROFILE", "C:\\Users\\2b2ttianxiu"),
+            // ("windir", "C:\\WINDOWS"),
+            // ("ZES_ENABLE_SYSMAN", "1"),
+            ("VCMP_REDIRECT_DLL_PATH", self.redirect_dll_path.to_str().unwrap()),
+        ];
+        println!("{env_vars:?}");
+
+        let mut env_block = String::new();
+        for (key, val) in env_vars {
+            env_block.push_str(key);
+            env_block.push('=');
+            env_block.push_str(val);
+            env_block.push('\0');
+            env_block.push('\0');
+        }
+        env_block.push('\0'); // 双空字符终止
+        env_block.push('\0');
+
+        // 转换为宽字符
+        let mut env_wide: &mut [u8] = unsafe { env_block.as_bytes_mut() };
 
         unsafe {
             CreateProcessW(
@@ -50,7 +145,7 @@ impl CommonGame {
                 None,
                 None,
                 false,
-                CREATE_SUSPENDED,
+                CREATE_SUSPENDED | CREATE_UNICODE_ENVIRONMENT,
                 None,// Some(env_wide.as_mut_ptr() as *const c_void),
                 PCWSTR(get_wchar_t(gta_dir.to_str().unwrap()).as_ptr()),
                 &STARTUPINFOW::default(),
@@ -156,7 +251,8 @@ pub fn launcher_common_game(
     gta_exe: &Path,
     dll_file: &Path,
     command_line: String,
+    redirect_dll_path: &Path,
 ) -> GameLauncherResult<u32> {
-    let mut game = CommonGame::new(gta_exe.to_path_buf(), dll_file.to_path_buf());
+    let mut game = CommonGame::new(gta_exe.to_path_buf(), dll_file.to_path_buf(), redirect_dll_path.to_path_buf());
     game.launch(command_line)
 }
