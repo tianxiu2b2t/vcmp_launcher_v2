@@ -112,6 +112,6 @@ pub static SYMLINK_FILES: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
     vec![
         "vcmp_config.txt",
         "debuglog.txt",
-        //".appdata",
+        ".appdata",
     ]
 });

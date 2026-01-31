@@ -29,10 +29,6 @@ struct Args {
     #[arg(short, long, value_name = "PORT")]
     port: u16,
 
-    /// 重定向DLL目录
-    #[arg(short, long, value_name = "PATH")]
-    redirect_dll_path: PathBuf,
-
     /// Password for the server
     #[arg(short, long, value_name = "PASSWORD")]
     password: Option<String>,
@@ -44,7 +40,7 @@ fn main() {
     let ip_addr: Ipv4Addr = match args.ip.parse() {
         Ok(ip) => ip,
         Err(e) => {
-            eprintln!("valid ip: {}", e);
+            eprintln!("invalid ip: {}", e);
             std::process::exit(1);
         }
     };
@@ -55,7 +51,6 @@ fn main() {
         args.username,
         ip_addr,
         args.port,
-        args.redirect_dll_path,
     );
 
     let password = args.password;

@@ -55,8 +55,6 @@ pub fn launch(server: Server, version: impl Into<String>, password: Option<Strin
         server.ip.to_string(),
         "--port".to_string(),
         server.port.to_string(),
-        "--redirect-dll-path".to_string(),
-        path::absolute(version_path)?.to_str().unwrap().to_string(),
     ];
 
     let password_args = if is_empty(&password) {
