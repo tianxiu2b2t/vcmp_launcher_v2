@@ -17,7 +17,7 @@ export interface Config {
 export interface Server {
     ip: string;
     port: number;
-    official: boolean;
+    official?: boolean;
 }
 
 export interface ServerInfo {

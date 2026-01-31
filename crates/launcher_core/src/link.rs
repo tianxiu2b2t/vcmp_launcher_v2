@@ -11,6 +11,10 @@ fn create_symlink_for_file(src: impl AsRef<Path>, dst: impl AsRef<Path>) -> anyh
     if dst.exists() {
         std::fs::remove_file(&dst)?;
     }
+    // if src is not exists, create file
+    if !src.exists() {
+        std::fs::write(&src, b"")?;
+    }
     // #[cfg(target_family = "windows")]
     // std::os::windows::fs::symlink_file(src, dst)?;
     // #[cfg(not(target_family = "windows"))]
@@ -27,6 +31,10 @@ fn create_symlink_for_dir(src: impl AsRef<Path>, dst: impl AsRef<Path>) -> anyho
     if dst.exists() {
         // for to remove
         std::fs::remove_dir_all(&dst)?;
+    }
+    // if src is not exists, create dir
+    if !src.exists() {
+        std::fs::create_dir_all(&src)?;
     }
     // std::fs::hard_link(src, dst)?;
     #[cfg(target_family = "windows")]
