@@ -28,7 +28,6 @@ fn get_wchar_t(content: &str) -> Vec<u16> {
 pub struct CommonGame {
     pub gta_exe: PathBuf,
     pub dll_file: PathBuf,
-    pub redirect_dll_path: PathBuf,
     pub pi: PROCESS_INFORMATION,
     pub inject_thread: Option<HANDLE>,
     pub launched: bool,
@@ -185,8 +184,7 @@ pub fn launcher_common_game(
     gta_exe: &Path,
     dll_file: &Path,
     command_line: String,
-    redirect_dll_path: &Path,
 ) -> GameLauncherResult<u32> {
-    let mut game = CommonGame::new(gta_exe.to_path_buf(), dll_file.to_path_buf(), redirect_dll_path.to_path_buf());
+    let mut game = CommonGame::new(gta_exe.to_path_buf(), dll_file.to_path_buf());
     game.launch(command_line)
 }
