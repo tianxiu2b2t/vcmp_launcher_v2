@@ -1,4 +1,4 @@
-#![feature(junction_point)]
+#![cfg_attr(target_family = "windows", feature(junction_point))]
 
 pub mod config;
 pub mod server;

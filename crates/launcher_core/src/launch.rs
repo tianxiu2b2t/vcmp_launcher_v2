@@ -65,7 +65,7 @@ pub fn launch(server: Server, version: impl Into<String>, password: Option<Strin
         vec!["--password".to_string(), password.unwrap()]
     };
 
-    let merged_args = args.into_iter().chain(password_args.into_iter()).collect::<Vec<String>>();
+    let merged_args = args.into_iter().chain(password_args).collect::<Vec<String>>();
     event!(tracing::Level::INFO, "Launching vcmp-core with args: {:?}", merged_args);
 
     let process = std::process::Command::new(VCMP_CORE_PATH.to_path_buf())

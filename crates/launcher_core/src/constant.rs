@@ -90,7 +90,6 @@ pub static GAME_DATA: LazyLock<PathBuf> = LazyLock::new(|| {
 });
 
 pub static VCMP_CORE: &[u8] = include_bytes!("../../../build/vcmp_core.exe");
-pub static LIBRARY_REDIRECTOR: &[u8] = include_bytes!("../../../build/library_redirector.dll");
 
 pub static CLIENT: LazyLock<Client> = LazyLock::new(|| {
     reqwest::ClientBuilder::new().connect_timeout(Duration::from_secs(5)).build().unwrap()

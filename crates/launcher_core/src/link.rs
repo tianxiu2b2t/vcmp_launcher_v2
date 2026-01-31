@@ -20,6 +20,7 @@ fn create_symlink_for_file(src: impl AsRef<Path>, dst: impl AsRef<Path>) -> anyh
 }
 
 fn create_symlink_for_dir(src: impl AsRef<Path>, dst: impl AsRef<Path>) -> anyhow::Result<()> {
+    #[allow(unused)]
     let src = path::absolute(src.as_ref())?;
     let dst = path::absolute(dst.as_ref())?;
     // remove link first
