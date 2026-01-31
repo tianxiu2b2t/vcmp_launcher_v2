@@ -81,6 +81,14 @@ pub static VERSIONS: LazyLock<PathBuf> = LazyLock::new(|| {
     path
 });
 
+pub static GAME_DATA: LazyLock<PathBuf> = LazyLock::new(|| {
+    let path = APPDATA_DIR.join("game_data");
+    if !path.exists() {
+        std::fs::create_dir_all(&path).unwrap();
+    }
+    path
+});
+
 pub static VCMP_CORE: &[u8] = include_bytes!("../../../build/vcmp_core.exe");
 pub static LIBRARY_REDIRECTOR: &[u8] = include_bytes!("../../../build/library_redirector.dll");
 
@@ -88,3 +96,23 @@ pub static CLIENT: LazyLock<Client> = LazyLock::new(|| {
     reqwest::ClientBuilder::new().connect_timeout(Duration::from_secs(5)).build().unwrap()
 });
 
+    // serverlogs(dir)
+    // store(dir)
+    // .appdata (file)
+    // debuglog.txt (file)
+    // vcmp_config.txt (file)
+
+pub static SYMLINK_DIRS: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
+    vec![
+        "serverlogs",
+        "store",
+    ]
+});
+
+pub static SYMLINK_FILES: LazyLock<Vec<&'static str>> = LazyLock::new(|| {
+    vec![
+        "vcmp_config.txt",
+        "debuglog.txt",
+        //".appdata",
+    ]
+});

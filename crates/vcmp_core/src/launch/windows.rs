@@ -3,6 +3,7 @@ use std::ffi::c_void;
 use std::os::windows::ffi::OsStrExt;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::LazyLock;
 use windows::Win32::Foundation::*;
 use windows::Win32::System::Diagnostics::Debug::*;
 use windows::Win32::System::LibraryLoader::*;
@@ -11,6 +12,10 @@ use windows::Win32::System::Threading::*;
 use windows::core::{PCSTR, PCWSTR, PWSTR};
 
 use crate::{GameLauncherError, GameLauncherResult};
+
+pub static INCLUDE_VARS: LazyLock<Vec<String>> = LazyLock::new(|| vec![
+    "SystemRoot",
+].iter().map(|v| v.to_lowercase()).collect::<Vec<String>>());
 
 fn get_wchar_t(content: &str) -> Vec<u16> {
     OsStr::new(content)
@@ -44,7 +49,8 @@ impl CommonGame {
     pub fn launch(&mut self, command_line: String) -> GameLauncherResult<u32> {
         let gta_dir = self.gta_exe.parent().unwrap();
         // 2. 创建自定义环境变量字符串
-        let mut env_vars = vec![
+        let origin_vars = std::env::vars();
+        let env_vars = vec![
             // ("ALLUSERSPROFILE", "C:\\ProgramData"),
             // ("APPDATA", "D:\\Files\\TestVC"),
             // ("COMPUTERNAME", "2B2TTIANXIU"),
@@ -122,21 +128,28 @@ impl CommonGame {
             // ("ZES_ENABLE_SYSMAN", "1"),
             ("VCMP_REDIRECT_DLL_PATH", self.redirect_dll_path.to_str().unwrap()),
         ];
-        println!("{env_vars:?}");
+        let mut inserted_vars = vec![];
+        for (key, val) in origin_vars {
+            if INCLUDE_VARS.contains(&key.to_lowercase()) {
+                inserted_vars.push((key.to_string(), val.to_string()));
+            }
+        }
+        let merged_vars = inserted_vars.into_iter().chain(env_vars.into_iter().map(|f| (f.0.to_string(), f.1.to_string()))).collect::<Vec<(_, _)>>();
+        println!("{merged_vars:?}");
 
         let mut env_block = String::new();
-        for (key, val) in env_vars {
-            env_block.push_str(key);
+        for (key, val) in merged_vars {
+            env_block.push_str(&key);
             env_block.push('=');
-            env_block.push_str(val);
+            env_block.push_str(&val);
             env_block.push('\0');
-            env_block.push('\0');
+            //env_block.push('\0');
         }
         env_block.push('\0'); // 双空字符终止
-        env_block.push('\0');
+        //env_block.push('\0');
 
         // 转换为宽字符
-        let mut env_wide: &mut [u8] = unsafe { env_block.as_bytes_mut() };
+        let env_wide: &mut [u8] = unsafe { env_block.as_bytes_mut() };
 
         unsafe {
             CreateProcessW(
@@ -145,8 +158,8 @@ impl CommonGame {
                 None,
                 None,
                 false,
-                CREATE_SUSPENDED | CREATE_UNICODE_ENVIRONMENT,
-                None,// Some(env_wide.as_mut_ptr() as *const c_void),
+                CREATE_SUSPENDED,// | CREATE_UNICODE_ENVIRONMENT,
+                Some(env_wide.as_mut_ptr() as *const c_void),
                 PCWSTR(get_wchar_t(gta_dir.to_str().unwrap()).as_ptr()),
                 &STARTUPINFOW::default(),
                 &mut self.pi,

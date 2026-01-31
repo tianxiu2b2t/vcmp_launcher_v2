@@ -22,6 +22,7 @@ pub fn run() -> tauri::Result<()> {
             bridge::ping_server,
             bridge::download_resource,
             bridge::random_object_id,
+            bridge::launch
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

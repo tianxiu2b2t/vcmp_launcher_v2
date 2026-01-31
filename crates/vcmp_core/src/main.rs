@@ -32,6 +32,10 @@ struct Args {
     /// 重定向DLL目录
     #[arg(short, long, value_name = "PATH")]
     redirect_dll_path: PathBuf,
+
+    /// Password for the server
+    #[arg(short, long, value_name = "PASSWORD")]
+    password: Option<String>,
 }
 
 fn main() {
@@ -45,14 +49,22 @@ fn main() {
         }
     };
 
-    match vcmp_core::launch::launch_game(LaunchConfig::new(
+    let mut config = LaunchConfig::new(
         args.gta_exe,
         args.dll_file,
         args.username,
         ip_addr,
         args.port,
         args.redirect_dll_path,
-    )) {
+    );
+
+    let password = args.password;
+    if let Some(password) = password {
+        config = config.with_password(password);    
+    }
+    
+
+    match vcmp_core::launch::launch_game(config) {
         Ok(res) => {
             println!("pid: {res}")
         }

@@ -52,3 +52,12 @@ export async function downloadResource(
 export async function getRandomObjectId(): Promise<string> {
     return await invoke('random_object_id');
 }
+
+export async function launch(
+    server: Server,
+    version: string,
+    password?: string,
+): Promise<number> {
+    return await invoke('launch', { server, version, password });
+    
+}
