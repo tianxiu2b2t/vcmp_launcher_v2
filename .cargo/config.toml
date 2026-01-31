@@ -1,0 +1,11 @@
+[target.i686-pc-windows-msvc]
+rustflags = [
+    "-C", "link-args=/SUBSYSTEM:CONSOLE,5.01",  # Windows 7 的子系统版本
+    "-C", "target-feature=+crt-static",         # 静态链接运行时库
+]
+
+[target.x86_64-pc-windows-msvc]
+rustflags = [
+    "-C", "link-args=/SUBSYSTEM:CONSOLE,5.02",  # Windows 7 64位
+    "-C", "target-feature=+crt-static",
+]
