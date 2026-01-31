@@ -28,11 +28,6 @@ def cp_build(src: Path):
         r.write(w.read())
 
 
-def build_library_redirector():
-    subprocess.run(['cargo', 'build', '--target', target, '--release', '--package', 'library_redirector'])
-    # dll
-    cp_build(Path(target) / 'release' / 'library_redirector.dll')
-
 def dev_tauri():
     subprocess.run(['yarn', 'tauri', 'dev'], shell=True)
 
@@ -40,7 +35,6 @@ def dev_tauri():
 if __name__ == '__main__':
     subprocess.run(['rustup', 'target', 'add', target])
     build_vcmp_core()
-    build_library_redirector()
     if args.mode == 'dev':
         dev_tauri()
     # elif args.mode == 'build':
