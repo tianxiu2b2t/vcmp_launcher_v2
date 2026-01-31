@@ -48,7 +48,7 @@ impl CommonGame {
         let gta_dir = self.gta_exe.parent().unwrap();
         // 2. 创建自定义环境变量字符串
         let origin_vars = std::env::vars();
-        let env_vars = vec![];
+        let env_vars: Vec<(&str, &str)> = vec![];
         let mut inserted_vars = vec![];
         for (key, val) in origin_vars {
             if INCLUDE_VARS.contains(&key.to_lowercase()) {
