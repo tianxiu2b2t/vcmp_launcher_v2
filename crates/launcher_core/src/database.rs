@@ -1,9 +1,9 @@
-use std::sync::OnceLock;
+use std::{path, sync::OnceLock};
 
 use sqlx::Row;
 use tracing::event;
 
-use crate::{constant::APPDATA_DIR, models::{HistoryServerFromDatabase, RawHistoryServerFromDatabase, RawServerFromDatabase, Server, ServerFromDatabase}};
+use crate::{constant::DATABASE_FILE, models::{HistoryServerFromDatabase, RawHistoryServerFromDatabase, RawServerFromDatabase, Server, ServerFromDatabase}};
 
 #[derive(Debug)]
 pub struct Database {
@@ -12,7 +12,10 @@ pub struct Database {
 
 impl Database {
     pub async fn new() -> Self {
-        let pool = sqlx::sqlite::SqlitePoolOptions::new().connect(APPDATA_DIR.join("appdata.db").to_str().unwrap()).await.unwrap();
+        let db_file = path::absolute(DATABASE_FILE.to_path_buf()).unwrap();
+        event!(tracing::Level::INFO, "Initializing database at {}", db_file.display());
+        // 
+        let pool = sqlx::sqlite::SqlitePoolOptions::new().connect(format!("sqlite:{}", db_file.to_str().unwrap()).as_str()).await.unwrap();
         // favourites
         sqlx::query("CREATE TABLE IF NOT EXISTS servers (address TEXT not null, port INTEGER not null, password TEXT default null)").execute(&pool).await.unwrap();
         // history

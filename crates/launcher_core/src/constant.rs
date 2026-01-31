@@ -88,6 +88,13 @@ pub static GAME_DATA: LazyLock<PathBuf> = LazyLock::new(|| {
     }
     path
 });
+pub static DATABASE_FILE: LazyLock<PathBuf> = LazyLock::new(|| {
+    let path = APPDATA_DIR.join("appdata.db");
+    if !path.exists() {
+        std::fs::File::create(&path).unwrap();
+    }
+    path
+});
 
 pub static VCMP_CORE: &[u8] = include_bytes!("../../../build/vcmp_core.exe");
 
