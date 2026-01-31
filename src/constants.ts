@@ -9,30 +9,37 @@ import {
 import { ServerInfo } from './types';
 import { hashServer } from './utils';
 
+export const routes = [
+    {
+        path: '/',
+        name: 'Home',
+        component: () => import('./views/Home.vue'),
+    },
+    {
+        path: '/internet',
+        name: 'Internet',
+        component: () => import('./views/Internet.vue'),
+    },
+    {
+        path: '/settings',
+        name: 'Settings',
+        component: () => import('./views/Settings.vue'),
+    },
+    {
+        path: '/about',
+        name: 'About',
+        component: () => import('./views/About.vue'),
+    },
+    {
+        path: '/debug',
+        name: 'Debug',
+        component: () => import('./views/Debug.vue'),
+    },
+];
+
 export const router = createRouter({
     history: createWebHistory(),
-    routes: [
-        {
-            path: '/',
-            name: 'Home',
-            component: () => import('./views/Home.vue'),
-        },
-        {
-            path: '/internet',
-            name: 'Internet',
-            component: () => import('./views/Internet.vue'),
-        },
-        {
-            path: '/settings',
-            name: 'Settings',
-            component: () => import('./views/Settings.vue'),
-        },
-        {
-            path: '/debug',
-            name: 'Debug',
-            component: () => import('./views/Debug.vue'),
-        },
-    ],
+    routes,
 });
 
 export const systemDarkMode = computed(() => {
@@ -50,6 +57,12 @@ watch(
     },
     { deep: true },
 );
+
+(() => {
+    if (systemDarkMode.value) {
+        document.documentElement.classList.add('dark');
+    }
+})();
 
 export const internetServers = ref<ServerInfo[]>([]);
 export async function refreshInternetServers() {

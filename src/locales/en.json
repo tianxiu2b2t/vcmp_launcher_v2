@@ -1,0 +1,17 @@
+{
+    "common": {
+        "application_name": "Vice City Multiplayer Launcher V2"
+    },
+    "tabs": {
+        "home": "Home",
+        "internet": "Internet",
+        "settings": "Settings"
+    },
+    "list": {
+        "servername": "Server Name",
+        "gamemode": "GameMode",
+        "players": "Players",
+        "version": "Version",
+        "ping": "Ping"
+    }
+}

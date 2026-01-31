@@ -1,6 +1,6 @@
 <template>
     <Progressbar />
-    <Switchbar :data="tabs" :model-value="active"></Switchbar>
+    <Switchbar :data="tabs" :model-value="active" :scale="1.1"></Switchbar>
     <main>
         <RouterView></RouterView>
     </main>
@@ -23,6 +23,10 @@ const tabs = [
         path: '/settings',
     },
     {
+        text: t('tabs.about'),
+        path: '/about',
+    },
+    {
         text: 'Debug',
         path: '/debug',
     },
@@ -34,6 +38,8 @@ const active = ref<number>(0);
 :root.dark {
     --bg-color: #1f1f1f;
     --main-color: #f4d1b4;
+    --alpha-main-color: rgba(244, 209, 180, 0.5);
+    --dark-main-color: #0fc6c2;
     --dark-color: rgba(0, 0, 0, 0.7);
     --color: rgba(255, 255, 255, 0.7);
     color: var(--color);
@@ -41,6 +47,8 @@ const active = ref<number>(0);
 :root {
     --bg-color: #f5f5f5;
     --main-color: #0fc6c2;
+    --dark-main-color: #f4d1b4;
+    --alpha-main-color: rgba(15, 198, 194, 0.5);
     --dark-color: rgba(255, 255, 255, 0.7);
     --color: rgba(0, 0, 0, 0.7);
     color: var(--color);

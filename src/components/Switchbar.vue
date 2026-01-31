@@ -1,5 +1,8 @@
 <template>
-    <div class="tabs-outer-container">
+    <div
+        class="tabs-outer-container"
+        :style="`--scale: ${$props.scale}; --floor-scale: ${floorScale}`"
+    >
         <div class="tabs-container">
             <button
                 v-for="(value, idx) in innerData"
@@ -29,7 +32,12 @@ const props = defineProps({
         type: Number,
         default: 0,
     },
+    scale: {
+        type: Number,
+        default: 1,
+    },
 });
+const floorScale = Math.floor(props.scale);
 const innerData: TabButton[] = props.data.map((item) => {
     if (typeof item == 'string') {
         return {
@@ -115,9 +123,9 @@ defineExpose({
     text-decoration: none;
     font-family: inherit;
     font-weight: 500;
-    line-height: 1.25;
+    line-height: calc(1.25 * var(--scale));
     text-transform: uppercase;
-    max-width: 360px;
+    max-width: calc(360px * var(--scale));
     position: relative;
     flex-shrink: 0;
     overflow: hidden;
@@ -129,7 +137,7 @@ defineExpose({
     padding: 4px 12px;
     min-height: 0px;
     min-width: 0px;
-    font-size: 12px;
+    font-size: calc(12px * var(--floor-scale));
 }
 .tabs-button:hover {
     color: var(--main-color);
