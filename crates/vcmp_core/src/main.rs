@@ -35,6 +35,7 @@ struct Args {
 }
 
 fn main() {
+    println!("VCMP Launcher v1.0");
     let args = Args::parse();
 
     let ip_addr: Ipv4Addr = match args.ip.parse() {
