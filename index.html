@@ -7,13 +7,13 @@
         <style>
             @font-face {
                 font-family: 'HarmonyOS Sans';
-                src: url('./assets/fonts/HarmonyOS_Sans_SC_Regular.ttf')
-                    format('truetype');
+                src: url('./fonts/HarmonyOS_Sans_SC_Regular.ttf');
             }
             * {
                 margin: 0;
                 padding: 0;
                 border: none;
+                box-sizing: border-box;
                 font-family:
                     'HarmonyOS Sans',
                     system-ui,
@@ -37,6 +37,22 @@
             body {
                 height: 100vh;
                 width: 100vw;
+            }
+            ::-webkit-scrollbar,
+            html ::-webkit-scrollbar {
+                width: 5px;
+                height: 5px;
+                border-radius: 10px;
+            }
+            ::-webkit-scrollbar-thumb,
+            html ::-webkit-scrollbar-thumb {
+                background-color: #94a3b8;
+                border-radius: 10px;
+            }
+            ::-webkit-scrollbar-track,
+            html ::-webkit-scrollbar-track {
+                background-color: #e2e8f0;
+                border-radius: 10px;
             }
         </style>
     </head>

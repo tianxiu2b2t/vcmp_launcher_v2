@@ -1,6 +1,8 @@
 <template>
     <Progressbar />
-    <Switchbar :data="tabs" :model-value="active" :scale="1.1"></Switchbar>
+    <header>
+        <Switchbar :data="tabs" :model-value="active" :scale="1.1"></Switchbar>
+    </header>
     <main>
         <RouterView></RouterView>
     </main>
@@ -35,6 +37,12 @@ const active = ref<number>(0);
 </script>
 
 <style>
+header {
+    margin: 0px 8px;
+}
+main {
+    margin: 1rem;
+}
 :root.dark {
     --bg-color: #1f1f1f;
     --main-color: #f4d1b4;
