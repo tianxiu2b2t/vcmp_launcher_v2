@@ -3,7 +3,7 @@
         class="tabs-outer-container"
         :style="`--scale: ${$props.scale}; --floor-scale: ${floorScale}`"
     >
-        <div class="tabs-container">
+        <div class="tabs-container" ref="container">
             <button
                 v-for="(value, idx) in innerData"
                 class="tabs-button"
@@ -49,15 +49,19 @@ const innerData: TabButton[] = props.data.map((item) => {
 const active = ref<number>(props.active);
 const block = ref<HTMLElement>();
 const btns = ref<HTMLButtonElement[]>([]);
+const container = ref<HTMLElement>();
 function updateBlock() {
     const idx = active.value;
     const btn = btns.value[idx];
     const b = block.value;
-    if (btn && b) {
+    const containerRect = container.value?.getBoundingClientRect();
+    if (btn && b && containerRect) {
         const rect = btn.getBoundingClientRect();
         const blockRect = b.getBoundingClientRect();
         if (blockRect) {
-            b.style.left = `${rect.left}px`;
+            b.style.left = `${rect.x - containerRect.x}px`;
+            b.style.top = `${rect.y - containerRect.y}px`;
+            b.style.height = `${rect.height}px`;
             b.style.width = `${rect.width}px`;
         }
     }

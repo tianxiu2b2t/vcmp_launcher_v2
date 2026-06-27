@@ -13,6 +13,6 @@
     },
     "about": {
         "built_by": "由 Rust + Tauri + Vue3 驱动",
-        "features": "一个简单，快速上手，美观的 ${common.application_name} 程序"
+        "features": "一个简单，快速上手，美观的联机器"
     }
 }
