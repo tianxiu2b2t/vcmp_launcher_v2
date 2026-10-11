@@ -2,6 +2,7 @@
     "name": "vcmp_launcher",
     "private": true,
     "version": "0.1.0",
+    "packageManager": "pnpm@12.8.1",
     "type": "module",
     "scripts": {
         "dev": "vite",
@@ -10,8 +11,8 @@
         "tauri": "tauri"
     },
     "dependencies": {
-        "@tauri-apps/api": "^2",
-        "@tauri-apps/plugin-opener": "^2",
+        "@tauri-apps/api": "^2.12.3",
+        "@tauri-apps/plugin-opener": "^2.7.1",
         "@vueuse/core": "^14.1.0",
         "vue": "^3.5.13",
         "vue-debounce": "^5.0.1",
@@ -21,7 +22,7 @@
     "devDependencies": {
         "@eslint/css": "^0.13.0",
         "@eslint/js": "^9.38.0",
-        "@tauri-apps/cli": "^2",
+        "@tauri-apps/cli": "^2.12.2",
         "@vitejs/plugin-vue": "^5.2.1",
         "autoprefixer": "^10.4.20",
         "eslint": "^9.38.0",

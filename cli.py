@@ -34,7 +34,7 @@ def cp_build(src: Path, rename: Optional[str] = None):
 
 
 def dev_tauri():
-    subprocess.run(['yarn', 'tauri', 'dev'], shell=True)
+    subprocess.run(['pnpm', 'tauri', 'dev'], shell=True)
 
     
 if __name__ == '__main__':
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     if args.mode == 'dev':
         dev_tauri()
     elif args.mode == 'build':
-        tauri_cmd = ['yarn', 'tauri', 'build']
+        tauri_cmd = ['pnpm', 'tauri', 'build']
         if release:
             tauri_cmd.append('--release')
         subprocess.run(tauri_cmd, shell=True)

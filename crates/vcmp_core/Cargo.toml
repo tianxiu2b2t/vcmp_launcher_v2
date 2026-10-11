@@ -6,7 +6,12 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.5.54", features = ["derive"] }
-windows = { version = "0.62.1", features = [    
+
+# 只在编译到 Windows 目标时引入：非 Windows 上 src/launch.rs 会直接返回
+# GameLauncherError::NotSupportedPlatform，不需要 windows crate。
+# （旧写法把它放在 [dependencies]，导致 Linux 上 `cargo check -p vcmp_core` 也会去编译它。）
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62.1", features = [
     "Win32_Foundation",
     "Win32_System_Threading",
     "Win32_System_ProcessStatus",
