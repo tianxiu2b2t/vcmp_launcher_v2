@@ -28,7 +28,10 @@ fn inner_launch_game(
         return Err(GameLauncherError::NotSupportedArch(None));
     }
 
-    #[allow(unused)]
+    // 以前这一行是无条件编译的：非 Windows 目标上 `windows` crate 不存在
+    // （现在它只在 cfg(windows) 下引入），cargo check 会报 E0433。
+    // 上面两个 early return 已经保证非 Windows / 非 x86 走不到这里。
+    #[cfg(target_os = "windows")]
     windows::launcher_common_game(gta_exe, dll_file, command_line)
 }
 

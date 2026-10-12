@@ -96,7 +96,9 @@ pub static DATABASE_FILE: LazyLock<PathBuf> = LazyLock::new(|| {
     path
 });
 
-pub static VCMP_CORE: &[u8] = include_bytes!("../../../build/vcmp_core.exe");
+// 内嵌的注入器。绝对路径由 build.rs（VCMP_CORE_BYTES）注入：
+// 有 build/vcmp_core.exe 时指向它，否则指向 OUT_DIR 里的空占位文件。
+pub static VCMP_CORE: &[u8] = include_bytes!(env!("VCMP_CORE_BYTES"));
 
 pub static CLIENT: LazyLock<Client> = LazyLock::new(|| {
     reqwest::ClientBuilder::new().connect_timeout(Duration::from_secs(5)).build().unwrap()

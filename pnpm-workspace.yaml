@@ -1,0 +1,21 @@
+# pnpm 设置文件。
+# pnpm 10+ 默认不执行依赖的 postinstall 脚本；这里放行 esbuild（vite 的原生二进制需要它）。
+# 注意：pnpm 12 起不再读取 package.json 里的 "pnpm" 字段，这类设置只能写在这里；
+# 用 `pnpm approve-builds` 会自动写入下面的 allowBuilds（缩进可能被它改回 2 空格）。
+# 详见 AGENT.md §7 坑 4。
+allowBuilds:
+    esbuild: true
+minimumReleaseAgeExclude:
+  - '@tauri-apps/api@2.12.3'
+  - '@tauri-apps/cli-darwin-arm64@2.12.2'
+  - '@tauri-apps/cli-darwin-x64@2.12.2'
+  - '@tauri-apps/cli-linux-arm-gnueabihf@2.12.2'
+  - '@tauri-apps/cli-linux-arm64-gnu@2.12.2'
+  - '@tauri-apps/cli-linux-arm64-musl@2.12.2'
+  - '@tauri-apps/cli-linux-riscv64-gnu@2.12.2'
+  - '@tauri-apps/cli-linux-x64-gnu@2.12.2'
+  - '@tauri-apps/cli-linux-x64-musl@2.12.2'
+  - '@tauri-apps/cli-win32-arm64-msvc@2.12.2'
+  - '@tauri-apps/cli-win32-ia32-msvc@2.12.2'
+  - '@tauri-apps/cli-win32-x64-msvc@2.12.2'
+  - '@tauri-apps/cli@2.12.2'
