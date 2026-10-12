@@ -3,6 +3,40 @@
 > 记录本仓库的实际改动，**精确到时间（时区 UTC，括号内为 UTC+8）**。
 > 格式：`## [YYYY-MM-DD HH:MM UTC (HH:MM UTC+8)] 标题`，下面按「新增 / 修改 / 验证 / 备注」列出具体内容。
 
+## [2026-10-12 14:17 UTC (2026-10-12 22:17 UTC+8)] 修复服务器列表获取失败导致的 panic，并把网络错误呈现到界面
+
+### 问题（用户实测日志）
+`launcher_core/src/internet.rs` 里是 `inner_fetch_internet(...).await.unwrap()`：
+镜像站 `https://vcmp.txit.top/servers/` 连接被重置（`received fatal alert: InternalError`）、
+或返回 HTML（`error decoding response body ... expected value at line 1 column 1`）时，
+直接在 tokio worker 线程上 panic，前端 `Internet` 页 `onMounted` 一进去就刷屏一堆 panic。
+
+### 修改
+- `crates/launcher_core/src/internet.rs`（重写）：
+  - `fetch_internet_servers()` 返回 `Result<Vec<Server>>`，**不再 unwrap**，错误交给上层。
+  - 加入**镜像站回退**：先用配置里的 master URL，失败后依次尝试内置 `MASTER_URLS`（master.vc-mp.org / thijn.ovh / adtec.ovh），只有前一个失败才发下一个。
+  - 单次请求 10s 超时（`tokio::time::timeout`，连接超时另有 `CLIENT` 上的 5s）。
+  - 解析失败时给出可读信息：HTTP 状态码 + serde 错误 + 响应开头 120 字符（`expected value at line 1 column 1` 这类错误的根源就是拿回了 HTML）。
+- `crates/src-tauri/src/bridge.rs`：`fetch_internet_servers` 命令用 `?` 把错误转成 command 错误返回前端（原来 `Ok(...)` 会把 panic/错误吞掉）。
+- `crates/launcher_core/src/server.rs`：
+  - UDP 收包处加短包判断，避免 `buf[origin_packet.len()..size]` / `data[0]` 在畸形包上 panic。
+  - `elapsed.unwrap()` + `try_from(...).unwrap()` 改为返回错误（`没有收到任何响应包` / `{server}: {e}`）。
+- 前端：
+  - `src/bridge.ts` 新增 `errorMessage()`，统一把 invoke 抛出的字符串/Error 转成可展示文本。
+  - `src/constants.ts` 新增 `internetServersLoading` / `internetServersError`；`refreshInternetServers()` 改为
+    try/catch/finally：拉列表失败写入 `internetServersError`，**单个服务器 ping 失败不再中断整个列表**（逐个捕获并 console.warn）。
+  - `src/views/Internet.vue`：加刷新按钮 + 加载中 / 失败（含错误信息与提示）/ 空列表三种状态。
+  - `src/locales/{zh_cn,en}.json`：补充 `internet.*`、`list.empty`、`tabs.about` 等文案（并统一了两份文件的键结构）。
+
+### 验证
+- ✅ `cargo check -p launcher_core --target x86_64-unknown-linux-gnu` —— 通过（仅 build.rs 的 vcmp_core.exe 缺失告警）。
+- ✅ `pnpm build`（`vue-tsc --noEmit && vite build`）—— 退出码 0，71 modules。
+- ⚠️ 真实网络失败路径无法在本沙箱复现（需要 Windows/GUI 跑起来点进 Internet 页）；逻辑上错误已不再进入 panic 分支。
+
+### 备注
+- 官方 master（`http://master.vc-mp.org` 等）是 **http**，镜像站是 https；如果以后要强制 https 或更换默认镜像，改 `crates/launcher_core/src/constant.rs` 的 `MASTER_URLS` / `MIRROR_MASTER_URLS` 即可。
+- 排版布局问题依旧未动（见 `AGENT-CONTEXT.md`，等用户提供截图/描述）。
+
 ## [2026-10-11 17:44 UTC (2026-10-12 01:44 UTC+8)] 更新 Tauri 依赖 + 修复「找不到 vcmp_core.exe」导致的编译失败
 
 ### 修改（Tauri 相关依赖）

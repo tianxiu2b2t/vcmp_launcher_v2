@@ -101,11 +101,11 @@ python cli.py build --release
 
 - **布局壳在 `App.vue`**：顺序为 `<Progressbar />`（顶部 3px 线）、`<header>`（`Switchbar` 标签导航）、`<main>`（`RouterView`）。页面级留白目前只有 `header{margin:0 8px}` 和 `main{margin:1rem}` —— **做排版时优先动这里**。
 - **主题变量**定义在 `App.vue` 的 `:root` / `:root.dark`：`--bg-color`、`--main-color`、`--dark-main-color`、`--alpha-main-color`、`--dark-color`、`--color`。暗色由 `constants.ts` 读 `prefers-color-scheme` 给 `<html>` 加 `.dark` 决定。**新样式一律用这些变量，不要写死颜色**。
-- **全局状态在 `constants.ts`**：`config`（`toRef(await getConfig())` + deep watch 自动 `setConfig`）、`internetServers`、`refreshInternetServers()`、`progressbar`、`router`、`routes`。
+- **全局状态在 `constants.ts`**：`config`（`toRef(await getConfig())` + deep watch 自动 `setConfig`）、`internetServers` + `internetServersLoading` + `internetServersError`、`refreshInternetServers()`、`progressbar`、`router`、`routes`。
 - **`Switchbar.vue` 的坑**：`active` 是内部 `ref`，`watch(active)` 时才 `router.push(path)`；它**不会**跟随路由反向同步，所以「刷新后高亮错位」是已知问题，改导航时注意。
 - **`SvgIcon.vue`** 依赖 `vite-plugin-svg-icons` 把 `src/assets/svg/*.svg` 变成 `#icon-<name>`，并按 `removeAttrs(fill|stroke|class|style)` 清掉原色，靠 `color` prop 上色。
 - **i18n 约定了 `${common.key}` 占位**：`locales/*.json` 会被自动 glob 加载，`common.json` 的内容注入到每个语言的 `common` 下，其它文件里的 `${common.x.y}` 会在启动时被替换成字面量。
-- 视图现状：`Home.vue` 是**空壳**（只有注释）、`Internet.vue` 直接渲染 `ServerList` 并 `onMounted(refreshInternetServers)`、`Settings.vue` 是 5 个 `InputEdit` 的竖排、`About.vue` 有渐变标题 + Hero SVG 装饰、`Debug.vue` 是启动/下载的手动测试台。
+- 视图现状：`Home.vue` 是**空壳**（只有注释）、`Internet.vue` = 刷新按钮 + 加载/失败/空列表三态 + `ServerList`（`onMounted(refreshInternetServers)`）、`Settings.vue` 是 5 个 `InputEdit` 的竖排、`About.vue` 有渐变标题 + Hero SVG 装饰、`Debug.vue` 是启动/下载的手动测试台。
 - 组件风格：`<script setup lang="ts">` + `defineProps`/`defineEmits`，样式分散在 `App.vue` 全局和组件 `<style scoped>`，缩进 4 空格、单引号、尾随分号（见 `.prettierrc`）。
 
 ## 7. 坑与注意事项（重要）
@@ -127,7 +127,9 @@ python cli.py build --release
    - 沙箱内 `/root/.local/share/pnpm/store` 存在但**无法硬链接**到工作区，pnpm 会自动降级到工作区内的
      `node_modules/.pnpm-store`（会打印一条 WARN，属正常）。**不要再退回 npm**：npm 全局缓存 `/root/.npm/_cacache` 只读会 `EROFS`。
 5. **`ROOT` 是相对路径**：debug 用 `../../runner`，取决于进程工作目录。用 `cargo run`/`tauri dev` 从不同目录启动时，`runner/` 可能出现两份。
-6. **`internet.rs` 里 `.unwrap()` 直接炸**：master 请求失败会 panic（代码里已标 `TODO: Cache this`）。
+6. **网络错误不再 panic，但要注意这条链路的行为**：`internet.rs` 现在返回 `Result`（镜像站失败会依次回退到 `MASTER_URLS`，单次 10s 超时），
+   错误经 `bridge.rs` 的 `?` 抛给前端，由 `internetServersError` 在 Internet 页展示；单个服务器 ping 失败只 `console.warn` 不影响列表。
+   `server.rs` 的 UDP 解析也对畸形/短包做了防护。改动这条链路时别再引入 `unwrap()`。
 7. **`launch` 会阻塞式读子进程 stdout**，且 `resource.rs` 解压用 7z 无进度细粒度，改这两处要顺手考虑 UI 反馈。
 8. `ScreenToSmall.vue` 只 `console.log`，没有实际拦截逻辑；`Home.vue` 是空壳 —— 排版工作大概率要从这两个地方展开。
 9. **字体路径不对**：`index.html` 的 `@font-face` 指向 `/fonts/HarmonyOS_Sans_SC_Regular.ttf`，而字体实际在 `src/assets/fonts/`，构建时会警告且运行时回退系统字体。改排版若要统一字体，先修这里。

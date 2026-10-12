@@ -1,29 +1,34 @@
 # AGENT-CONTEXT.md — 会话上下文快照
 
 > 用途：把「上一轮发生了什么、下一轮从哪里接着干」记下来，换会话后先读这一份。
-> 时间基准：**2026-10-11 17:44 UTC / 2026-10-12 01:44 (UTC+8)**。
+> 时间基准：**2026-10-12 14:17 UTC / 2026-10-12 22:17 (UTC+8)**。
 
 ## 1. 本轮做了什么
 
 - 通读了整仓库（前端 `src/**`、`crates/src-tauri`、`crates/launcher_core`、`crates/vcmp_core`、构建脚本与配置）。
 - 按 `ENTRY.md` 第 4 节要求落地文档：新建 `AGENT.md`（项目操作手册）、`AGENT-CONTEXT.md`（本文件）、`CHANGELOG.md`（改动记录）。
 - 用提问向用户确认本轮范围，用户先选择 **「这轮只做基础工作」**：先建立文档/项目结构记录，**前端排版改动下一轮再做**；
-  随后用户按 `ENTRY.md` §3.3 追加要求 **「把 yarn 改成 pnpm」**（16:55 完成）；
-  接着按 §3 追加 **「更新 tauri 一些依赖，修复当前报错（Linux 下没有找到，需要忽略一下，windows 正常即可）」**（17:44 完成）：
+  随后用户按 `ENTRY.md` §3.3 追加要求 **「把 yarn 改成 pnpm」**（10-11 16:55 完成）；
+  接着按 §3 追加 **「更新 tauri 一些依赖，修复当前报错（Linux 下没有找到，需要忽略一下，windows 正常即可）」**（10-11 17:44 完成）：
   - tauri 系依赖升到 2.x 最新（Rust + npm 两侧，详见 `CHANGELOG.md` 17:44 条目）。
   - 修掉「找不到 vcmp_core.exe」的编译失败：新增 `crates/launcher_core/build.rs`，`build/vcmp_core.exe` 缺失时用 OUT_DIR 空占位兜底；
     并给 `vcmp_core/src/launch.rs` 里调用 `windows` crate 的那一行补上 `cfg(target_os = "windows")`。
-- 用户的新要求（`ENTRY.md` §4.4）：**提交 PR（分支名 `agent/dsh-coding`），由用户手动合并**。
+- **10-12 14:17：修掉服务器列表获取失败的 panic**（用户实测日志：镜像站 TLS `InternalError` / 返回 HTML 导致
+  `internet.rs:10` 在 tokio worker 上 panic 刷屏）：`internet.rs` 改为返回 `Result` + 镜像站回退 + 10s 超时 +
+  可读解析错误；`server.rs` 的 UDP 短包/缺包不再 unwrap；前端 Internet 页加了刷新按钮与加载/失败/空态，
+  单个服务器 ping 失败不再中断列表。详见 `CHANGELOG.md` 14:17 条目。
+- 用户的要求（`ENTRY.md` §4.4）：**提交 PR（分支名 `agent/dsh-coding`），由用户手动合并**。分支已 push（含用户追加的 `ENTRY.md` 提交）。
 - 结论性事实（供下次直接引用）：
   - 项目是 **Tauri 2**（`ENTRY.md` 里写的 "tauri-v3" 不准确）+ Vue 3 + TS + Vite。
   - 前端**唯一**与 Rust 通信出口是 `src/bridge.ts` 的 `invoke`；`src/constants.ts` 顶层就 `await getConfig()`。
   - 布局集中在 `src/App.vue`（header/main 的 margin + 主题变量）与 `src/components/Switchbar.vue`。
-  - `src/views/Home.vue` 目前是空壳，`Internet.vue` 直出 `ServerList`，`Settings.vue` 是 5 个竖排 `InputEdit`。
+  - `src/views/Home.vue` 目前是空壳，`Internet.vue` = 刷新按钮 + 三态 + `ServerList`，`Settings.vue` 是 5 个竖排 `InputEdit`。
 
 ## 2. 用户明确提出的待办（ENTRY.md §3）
 
-1. **需要修改前端排版布局** —— 尚未开始编码。
-2. 已确认的路线（用户于 16:2x 选择）：**不复刻原版 Win32 观感，做现代化重构** —— 保留现有信息架构（标签导航 + 路由页面 + ServerList/Settings/About），重做间距、层次与主题一致性；`screenshots/origin/` 仅作**信息与字段参考**，不作为像素目标。
+1. **需要修改前端排版布局** —— 尚未开始编码。用户 10-12 又提了一次「2. 排版布局问题」，但**没有说具体哪里不对**；
+   已向用户询问：是不满意现状，还是运行时报错/错位？需要截图或文字描述才能动手。
+2. 已确认的路线（用户于 10-11 16:2x 选择）：**不复刻原版 Win32 观感，做现代化重构** —— 保留现有信息架构（标签导航 + 路由页面 + ServerList/Settings/About），重做间距、层次与主题一致性；`screenshots/origin/` 仅作**信息与字段参考**，不作为像素目标。
 
 ## 3. 下一轮起点建议
 
@@ -64,13 +69,16 @@
 - ✅ `cargo check -p launcher_core --target x86_64-unknown-linux-gnu` —— **通过**（唯一输出是「找不到 build/vcmp_core.exe，嵌入空占位文件」的 warning）。
 - ✅ `cargo check -p vcmp_core --target x86_64-unknown-linux-gnu` —— **通过**（旧代码在这里报 `E0433: cannot find module or crate 'windows'`）。
 - ✅ build.rs 两条分支实测：有 `build/vcmp_core.exe` 时注入绝对路径，删掉后回落到 OUT_DIR 空占位（`-vv` 确认）。
+- ✅ 10-12 修复网络 panic 后重跑：`cargo check -p launcher_core` 与 `pnpm build` 均通过。
 - ⚠️ `cargo check --workspace` 在 Linux 上**仍会失败**（glib/pango/gdk/cairo/atk、libdbus-sys 的 pkg-config）。
   本环境 `/usr` 只读、apt/oma 都装不了，**按用户要求忽略**（Windows 上正常）。
 
 仍存疑 / 未验证：
 
 - **Windows / i686 目标的真实构建没跑过**（本机做不到）——尤其 `vcmp_core` 的 `cfg(windows)` 分支与 Tauri 2.12 的升级结果，需要用户在 Windows 侧确认。
+- **网络失败路径没法在本沙箱复现**（需要 GUI 跑起来点进 Internet 页）；只能保证不再走 panic 分支。
 - `src/components/ScreenToSmall.vue` 只在 `watch` 里 `console.log`，没有实际的小屏拦截行为。
+- 10-12 的排版问题尚未定位：用户说「2. 排版布局问题」，但未描述具体现象，**下一步就是问清/要看截图**。
 - 未验证 `pnpm tauri dev/build`（需要图形环境 + Windows 侧产物）；其余 pnpm 链路（`pnpm build`、`node_modules/.bin/tauri`）已通。
 - 沙箱 `/root/.cargo/registry` 只读：`cargo update` 之后要下载新 crate 时必须 `export CARGO_HOME=/tmp/cargo-home`（先把 `/root/.cargo/{config.toml,registry}` 拷过去）。
 - 本环境疑似有工具会在文件变动后自动 `rustfmt`，曾把十几个无关源文件格式化；已 `git checkout` 还原，提交前请再复查 `git status`。
