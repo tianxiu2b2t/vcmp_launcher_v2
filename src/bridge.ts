@@ -35,6 +35,17 @@ export async function fetchInternetServers(): Promise<Server[]> {
     return await invoke('fetch_internet_servers');
 }
 
+/** 把 invoke/后端返回的错误统一成可展示的字符串 */
+export function errorMessage(error: unknown): string {
+    if (typeof error === 'string') return error;
+    if (error instanceof Error) return error.message;
+    if (error && typeof error === 'object') {
+        const maybe = error as { message?: unknown };
+        if (typeof maybe.message === 'string') return maybe.message;
+    }
+    return String(error);
+}
+
 export async function pingServer(
     server: Server,
     millis?: number,

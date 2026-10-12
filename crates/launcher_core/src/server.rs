@@ -83,6 +83,10 @@ async fn inner_get_server_info(server: &Server) -> Result<ServerInfo> {
         let mut buf = [0u8; 1024];
         match conn.recv(&mut buf).await {
             Ok(size) => {
+                // 包头 = origin_packet + 1 字节类型；畸形/短包直接跳过而不是 panic（旧代码这里是 data[0]）
+                if size <= origin_packet.len() {
+                    continue;
+                }
                 let data = &buf[origin_packet.len()..size];
                 let p = data[0];
                 let data = &data[1..];
@@ -103,11 +107,9 @@ async fn inner_get_server_info(server: &Server) -> Result<ServerInfo> {
     // println!("recv_i: {:?}", format_bytes(&recv_i));
     // println!("recv_c: {:?}", format_bytes(&recv_c));
 
-    Ok(
-        ServerInfo::try_from((server.clone(), recv_i, recv_c, elapsed.unwrap()))
-            .map_err(|e| anyhow!("{server:?}: {e}"))
-            .unwrap(),
-    )
+    let elapsed = elapsed.ok_or_else(|| anyhow!("{server:?}: 没有收到任何响应包"))?;
+    ServerInfo::try_from((server.clone(), recv_i, recv_c, elapsed))
+        .map_err(|e| anyhow!("{server:?}: {e}"))
 }
 
 pub async fn get_server_info(server: &Server, millis: u64) -> Result<ServerInfo> {

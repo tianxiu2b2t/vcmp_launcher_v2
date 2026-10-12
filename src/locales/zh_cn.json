@@ -2,14 +2,24 @@
     "tabs": {
         "home": "首页",
         "internet": "互联网",
-        "settings": "设置"
+        "settings": "设置",
+        "about": "关于"
     },
     "list": {
         "servername": "服务器名称",
         "gamemode": "游戏模式",
         "players": "玩家",
         "version": "版本",
-        "ping": "延迟"
+        "ping": "延迟",
+        "map": "地图",
+        "password": "密码",
+        "empty": "暂无服务器"
+    },
+    "internet": {
+        "refresh": "刷新",
+        "loading": "正在获取服务器列表…",
+        "error": "获取服务器列表失败",
+        "hint": "可以检查网络或在设置里更换服务器列表网址"
     },
     "about": {
         "built_by": "由 Rust + Tauri + Vue3 驱动",

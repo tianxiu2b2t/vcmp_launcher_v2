@@ -1,6 +1,7 @@
 import { computed, ref, toRef, watch } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import {
+    errorMessage,
     fetchInternetServers,
     getConfig,
     pingServer,
@@ -65,19 +66,46 @@ watch(
 })();
 
 export const internetServers = ref<ServerInfo[]>([]);
+/** 服务器列表加载中（拉列表 + 批量 ping） */
+export const internetServersLoading = ref(false);
+/** 拉取服务器列表失败时的错误信息（网络不可用、镜像站异常等），为空表示没出错 */
+export const internetServersError = ref('');
+
 export async function refreshInternetServers() {
-    const servers = await fetchInternetServers();
-    await Promise.all(
-        servers.map(async (v) => {
-            const server = await pingServer(v);
+    if (internetServersLoading.value) return;
+    internetServersLoading.value = true;
+    internetServersError.value = '';
+    try {
+        const servers = await fetchInternetServers();
+        // 单个服务器 ping 失败不应影响整个列表，因此逐个捕获
+        const results = await Promise.all(
+            servers.map(async (v) => {
+                try {
+                    return await pingServer(v);
+                } catch (error) {
+                    console.warn(
+                        `[internet] ping ${hashServer(v)} failed:`,
+                        errorMessage(error),
+                    );
+                    return null;
+                }
+            }),
+        );
+        for (const server of results) {
+            if (!server) continue;
             const idx = internetServers.value.findIndex(
-                (s) => hashServer(v) === hashServer(s.server),
+                (s) => hashServer(server.server) === hashServer(s.server),
             );
             if (idx !== -1) {
                 internetServers.value[idx] = server;
-                return;
+                continue;
             }
             internetServers.value.push(server);
-        }),
-    );
+        }
+    } catch (error) {
+        internetServersError.value = errorMessage(error);
+        console.error('[internet] fetch servers failed:', error);
+    } finally {
+        internetServersLoading.value = false;
+    }
 }

@@ -2,13 +2,23 @@
     "tabs": {
         "home": "Home",
         "internet": "Internet",
-        "settings": "Settings"
+        "settings": "Settings",
+        "about": "About"
     },
     "list": {
         "servername": "Server Name",
         "gamemode": "GameMode",
         "players": "Players",
         "version": "Version",
-        "ping": "Ping"
+        "ping": "Ping",
+        "map": "Map",
+        "password": "Password",
+        "empty": "No servers"
+    },
+    "internet": {
+        "refresh": "Refresh",
+        "loading": "Fetching server list…",
+        "error": "Failed to fetch the server list",
+        "hint": "Check your network, or change the master list URL in Settings"
     }
 }

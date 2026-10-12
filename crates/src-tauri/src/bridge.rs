@@ -18,7 +18,8 @@ pub fn set_config(config: launcher_core::config::Config) -> tauri::Result<()> {
 
 #[tauri::command]
 pub async fn fetch_internet_servers() -> tauri::Result<Vec<launcher_core::models::Server>> {
-    Ok(launcher_core::internet::fetch_internet_servers().await)
+    // 网络失败不再 panic，而是作为 command 错误返回给前端
+    Ok(launcher_core::internet::fetch_internet_servers().await?)
 }
 
 #[tauri::command]
